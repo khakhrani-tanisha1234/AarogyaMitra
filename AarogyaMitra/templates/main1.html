@@ -1,0 +1,2226 @@
+{% load static %}
+
+
+{% block body %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Education Hub - AarogyaMitra</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #48bb78, #38a169);
+            --warning-gradient: linear-gradient(135deg, #ed8936, #dd6b20);
+            --danger-gradient: linear-gradient(135deg, #f56565, #e53e3e);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #4a5568;
+            --text-secondary: #718096;
+            --border-radius: 20px;
+            --box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            --neon-glow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #72c7b1;
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Enhanced animated background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Geometric background shapes */
+        .bg-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: morphShape 20s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 50% 30% 70% 40%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #a8e6cf, #ffd93d);
+            border-radius: 60% 40% 30% 70%;
+            animation-delay: -5s;
+        }
+
+        .shape:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(225deg, #ff8a80, #b39ddb);
+            border-radius: 40% 60% 70% 30%;
+            animation-delay: -10s;
+        }
+
+        @keyframes morphShape {
+            0%, 100% {
+                transform: rotate(0deg) scale(1);
+                border-radius: 50% 30% 70% 40%;
+            }
+            25% {
+                transform: rotate(90deg) scale(1.2);
+                border-radius: 30% 70% 40% 60%;
+            }
+            50% {
+                transform: rotate(180deg) scale(0.8);
+                border-radius: 70% 40% 50% 30%;
+            }
+            75% {
+                transform: rotate(270deg) scale(1.1);
+                border-radius: 40% 50% 30% 70%;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            animation: fadeInUp 0.8s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Enhanced header with typing animation */
+        .header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--neon-glow);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 4s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 2px 2px 8px rgba(0,0,0,0.3), 0 0 25px rgba(255,255,255,0.5);
+            }
+            to {
+                text-shadow: 2px 2px 8px rgba(0,0,0,0.3), 0 0 35px rgba(255,255,255,0.8);
+            }
+        }
+
+        .header .fa-heart {
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 50%, 100% {
+                transform: scale(1);
+            }
+            25%, 75% {
+                transform: scale(1.2);
+            }
+        }
+
+        .typing-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.3rem;
+            position: relative;
+            z-index: 1;
+            height: 1.5em;
+            overflow: hidden;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: white;
+            margin-left: 5px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Enhanced navigation with morphing effects */
+        .nav-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: var(--neon-glow);
+        }
+
+        .nav-tab {
+            padding: 18px 25px;
+            background: transparent;
+            border: none;
+            color: white;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .nav-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+            border-radius: 15px;
+        }
+
+        .nav-tab::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transition: all 0.4s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .nav-tab.active::before {
+            left: 0;
+        }
+
+        .nav-tab.active {
+            transform: translateY(-3px) rotateX(5deg);
+            box-shadow: 0 15px 35px rgba(72, 187, 120, 0.4);
+        }
+
+        .nav-tab:hover::after {
+            width: 100px;
+            height: 100px;
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-3px) scale(1.05);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Enhanced tab content transitions */
+        .tab-content {
+            display: none;
+            animation: slideInFade 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes slideInFade {
+            0% { 
+                opacity: 0; 
+                transform: translateX(30px) rotateY(15deg);
+                filter: blur(5px);
+            }
+            100% { 
+                opacity: 1; 
+                transform: translateX(0) rotateY(0deg);
+                filter: blur(0px);
+            }
+        }
+
+        /* Enhanced cards with hover effects */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(30px);
+            border-radius: var(--border-radius);
+            padding: 35px;
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 2px;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            transform: scale(0);
+            transition: transform 0.6s ease;
+            pointer-events: none;
+        }
+
+        .card:hover {
+            transform: translateY(-12px) rotateX(2deg);
+            box-shadow: 0 35px 70px rgba(0,0,0,0.2);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover::after {
+            transform: scale(1) rotate(180deg);
+        }
+
+        /* Enhanced learning modules with advanced animations */
+        .learning-module {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .learning-module::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.15), transparent);
+            transition: right 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .learning-module::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+            transition: width 0.6s ease;
+        }
+
+        .learning-module:hover::before {
+            right: 100%;
+        }
+
+        .learning-module:hover::after {
+            width: 100%;
+        }
+
+        .learning-module:hover {
+            transform: translateY(-8px) scale(1.02) rotateX(2deg);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            border-left-width: 12px;
+            background: linear-gradient(135deg, #ffffff, #f7fafc);
+        }
+
+        .module-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .learning-module:hover .module-title {
+            color: #667eea;
+            transform: translateX(5px);
+        }
+
+        /* Enhanced progress circle with liquid animation */
+        .progress-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-primary);
+            position: relative;
+            background: conic-gradient(#48bb78 0deg, #e2e8f0 0deg);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(72, 187, 120, 0);
+            }
+        }
+
+        .learning-module:hover .progress-circle {
+            transform: scale(1.2) rotateY(360deg);
+            animation: none;
+            box-shadow: 0 0 25px rgba(72, 187, 120, 0.6);
+        }
+
+        .progress-circle::before {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            border-radius: 50%;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .learning-module:hover .progress-circle::before {
+            background: linear-gradient(135deg, #f0fff4, #e6ffed);
+        }
+
+        /* Enhanced video player with 3D effects */
+        .video-player {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .video-player:hover {
+            transform: scale(1.03) rotateX(5deg) rotateY(2deg);
+            box-shadow: 0 35px 80px rgba(0,0,0,0.4);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 400px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-button {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            animation: playPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes playPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 20px rgba(255, 255, 255, 0);
+            }
+        }
+
+        .play-button:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.2);
+            border-color: rgba(255, 255, 255, 0.6);
+            animation: none;
+        }
+
+        /* Enhanced quiz with interactive feedback */
+        .quiz-container {
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(244, 63, 94, 0.2);
+        }
+
+        .quiz-option {
+            padding: 20px 30px;
+            background: white;
+            border: 3px solid #e2e8f0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 15px;
+            transform-style: preserve-3d;
+        }
+
+        .quiz-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.1), rgba(56, 161, 105, 0.1));
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .quiz-option:hover::before {
+            left: 0;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            transform: translateX(10px) rotateX(2deg);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .quiz-option.selected {
+            border-color: #48bb78;
+            background: linear-gradient(135deg, #f0fff4, #e6ffed);
+            transform: translateX(10px) scale(1.02);
+            animation: selectedGlow 0.6s ease;
+        }
+
+        @keyframes selectedGlow {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 0 15px rgba(72, 187, 120, 0);
+            }
+        }
+
+        .quiz-option.correct {
+            border-color: #48bb78;
+            background: var(--success-gradient);
+            color: white;
+            animation: correctPulse 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(1.05);
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f56565;
+            background: var(--danger-gradient);
+            color: white;
+            animation: shake 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { 
+                transform: scale(1.05);
+                box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.8);
+            }
+            50% { 
+                transform: scale(1.1);
+                box-shadow: 0 0 0 20px rgba(72, 187, 120, 0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+            20%, 40%, 60%, 80% { transform: translateX(8px); }
+        }
+
+        /* Enhanced notification system */
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            color: white;
+            padding: 25px 30px;
+            border-radius: 15px;
+            font-weight: 600;
+            z-index: 10000;
+            animation: slideInBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            max-width: 400px;
+            transform-origin: right top;
+        }
+
+        @keyframes slideInBounce {
+            0% {
+                transform: translateX(100%) scale(0.7) rotate(10deg);
+                opacity: 0;
+            }
+            30% {
+                transform: translateX(-15px) scale(1.1) rotate(-2deg);
+            }
+            100% {
+                transform: translateX(0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        /* Enhanced floating elements */
+        .floating-chat {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 75px;
+            height: 75px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            animation: floatPulse 3s ease-in-out infinite;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes floatPulse {
+            0%, 100% { 
+                transform: translateY(0) scale(1);
+                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4),
+                           0 0 0 0 rgba(102, 126, 234, 0.7); 
+            }
+            50% { 
+                transform: translateY(-5px) scale(1.05);
+                box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5),
+                           0 0 0 20px rgba(102, 126, 234, 0); 
+            }
+        }
+
+        .floating-chat:hover {
+            transform: scale(1.2) rotate(10deg);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.6);
+            animation: none;
+        }
+
+        /* Enhanced achievement badges */
+        .achievement-badge {
+            background: var(--primary-gradient);
+            border-radius: 18px;
+            padding: 30px;
+            text-align: center;
+            color: white;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .achievement-badge::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        .achievement-badge:hover {
+            transform: translateY(-12px) scale(1.08) rotateX(5deg);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .badge-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: iconFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(5deg);
+            }
+        }
+
+        .achievement-badge:hover .badge-icon {
+            transform: scale(1.3) rotate(15deg) translateY(-5px);
+            animation: none;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Enhanced stats with counter animation */
+        .stats-number {
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            display: block;
+            animation: countUp 2s ease-out;
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Enhanced responsive design */
+        @media (max-width: 1200px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .chatbot-container {
+                width: 90%;
+                right: 5%;
+                left: 5%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .header h1 {
+                font-size: 2.2rem;
+                flex-direction: column;
+                gap: 15px;
+            }
+            .nav-tabs { 
+                grid-template-columns: repeat(2, 1fr);
+                padding: 15px;
+            }
+            .nav-tab {
+                padding: 15px 20px;
+                font-size: 14px;
+            }
+            .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .floating-chat {
+                width: 65px;
+                height: 65px;
+                font-size: 26px;
+            }
+            .learning-module {
+                padding: 25px;
+            }
+            .video-player {
+                max-width: 100%;
+            }
+            .video-thumbnail {
+                height: 300px;
+            }
+            .play-button {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        /* Additional utility classes */
+        .grid {
+            display: grid;
+            gap: 25px;
+        }
+
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+
+        /* Enhanced button styles with morphing effects */
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            margin: 10px;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            border: 2px solid transparent;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            color: white;
+            box-shadow: 0 8px 25px rgba(72, 187, 120, 0.3);
+        }
+
+        .btn-warning {
+            background: var(--warning-gradient);
+            color: white;
+            box-shadow: 0 8px 25px rgba(237, 137, 54, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-4px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+        }
+
+        .btn:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        /* Loading states and micro-interactions */
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 30px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Enhanced scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 6px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+        }
+
+        /* Streak counter enhancements */
+        .streak-counter {
+            text-align: center;
+            padding: 35px;
+            background: var(--success-gradient);
+            color: white;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 40px rgba(72, 187, 120, 0.3);
+        }
+
+        .streak-number {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            animation: bounceIn 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Enhanced animated background -->
+    <div class="particles" id="particles"></div>
+    <div class="bg-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="container">
+        <!-- Enhanced header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-graduation-cap"></i>
+                Patient Education Hub
+                <i class="fas fa-heart"></i>
+            </h1>
+            <div class="typing-text">
+                <span id="typingText">Interactive Learning • Personalized Content • Gamified Experience</span>
+                <span class="typing-cursor"></span>
+            </div>
+        </div>
+
+        <!-- Enhanced navigation tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('learning')">
+                <i class="fas fa-book-open"></i> Learning Modules
+            </button>
+            <button class="nav-tab" onclick="showTab('videos')">
+                <i class="fas fa-video"></i> Video Library
+            </button>
+            <button class="nav-tab" onclick="showTab('quizzes')">
+                <i class="fas fa-question-circle"></i> Interactive Quizzes
+            </button>
+            <button class="nav-tab" onclick="showTab('progress')">
+                <i class="fas fa-chart-line"></i> My Progress
+            </button>
+            <button class="nav-tab" onclick="showTab('community')">
+                <i class="fas fa-users"></i> Community
+            </button>
+        </div>
+
+        <!-- Learning Modules Tab -->
+        <div id="learning" class="tab-content active">
+            <div class="card">
+                <h3><i class="fas fa-graduation-cap"></i> Interactive Learning Modules</h3>
+                <div class="grid grid-2">
+                    <div class="learning-module" onclick="openModule('ayurveda-basics')" data-progress="75">
+                        <div class="module-header">
+                            <div class="module-info">
+                                <div class="module-title">Ayurveda Fundamentals</div>
+                                <div class="module-description">
+                                    Learn about the three doshas, constitution types, and basic principles of Ayurvedic medicine.
+                                </div>
+                                <div class="module-meta">
+                                    <span><i class="fas fa-clock"></i> 45 mins</span>
+                                    <span><i class="fas fa-star"></i> 4.8/5</span>
+                                    <span><i class="fas fa-user"></i> 1,234 students</span>
+                                </div>
+                            </div>
+                            <div class="module-progress">
+                                <div class="progress-circle" style="background: conic-gradient(#48bb78 270deg, #e2e8f0 270deg);">
+                                    <span class="progress-text">75%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="learning-module" onclick="openModule('panchakarma-guide')" data-progress="30">
+                        <div class="module-header">
+                            <div class="module-info">
+                                <div class="module-title">Panchakarma Therapy Guide</div>
+                                <div class="module-description">
+                                    Comprehensive guide to understanding different Panchakarma treatments and their benefits.
+                                </div>
+                                <div class="module-meta">
+                                    <span><i class="fas fa-clock"></i> 60 mins</span>
+                                    <span><i class="fas fa-star"></i> 4.9/5</span>
+                                    <span><i class="fas fa-user"></i> 856 students</span>
+                                </div>
+                            </div>
+                            <div class="module-progress">
+                                <div class="progress-circle" style="background: conic-gradient(#48bb78 108deg, #e2e8f0 108deg);">
+                                    <span class="progress-text">30%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="learning-module" onclick="openModule('diet-nutrition')" data-progress="0">
+                        <div class="module-header">
+                            <div class="module-info">
+                                <div class="module-title">Ayurvedic Diet & Nutrition</div>
+                                <div class="module-description">
+                                    Learn how to eat according to your dosha for optimal health and digestion.
+                                </div>
+                                <div class="module-meta">
+                                    <span><i class="fas fa-clock"></i> 40 mins</span>
+                                    <span><i class="fas fa-star"></i> 4.7/5</span>
+                                    <span><i class="fas fa-user"></i> 2,156 students</span>
+                                </div>
+                            </div>
+                            <div class="module-progress">
+                                <div class="progress-circle" style="background: conic-gradient(#48bb78 0deg, #e2e8f0 0deg);">
+                                    <span class="progress-text">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="learning-module" onclick="openModule('lifestyle-practices')" data-progress="90">
+                        <div class="module-header">
+                            <div class="module-info">
+                                <div class="module-title">Daily Lifestyle Practices</div>
+                                <div class="module-description">
+                                    Discover daily routines, yoga practices, and meditation techniques for balanced living.
+                                </div>
+                                <div class="module-meta">
+                                    <span><i class="fas fa-clock"></i> 35 mins</span>
+                                    <span><i class="fas fa-star"></i> 4.9/5</span>
+                                    <span><i class="fas fa-user"></i> 1,789 students</span>
+                                </div>
+                            </div>
+                            <div class="module-progress">
+                                <div class="progress-circle" style="background: conic-gradient(#48bb78 324deg, #e2e8f0 324deg);">
+                                    <span class="progress-text">90%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-lightbulb"></i> Personalized Recommendations</h3>
+                <div class="grid grid-3">
+                    <div class="learning-module" style="border-left-color: #f56565;">
+                        <div class="module-title" style="color: #f56565;">For Your Pitta Constitution</div>
+                        <div class="module-description">
+                            Based on your recent pulse analysis, here are cooling practices and foods to balance your Pitta dosha.
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 20px;">
+                            <i class="fas fa-play"></i> Start Learning
+                        </button>
+                    </div>
+
+                    <div class="learning-module" style="border-left-color: #48bb78;">
+                        <div class="module-title" style="color: #48bb78;">Post-Treatment Care</div>
+                        <div class="module-description">
+                            Essential guidelines to follow after your Abhyanga therapy session for maximum benefits.
+                        </div>
+                        <button class="btn btn-success" style="margin-top: 20px;">
+                            <i class="fas fa-book"></i> Read Guide
+                        </button>
+                    </div>
+
+                    <div class="learning-module" style="border-left-color: #ed8936;">
+                        <div class="module-title" style="color: #ed8936;">Seasonal Wellness</div>
+                        <div class="module-description">
+                            Adapt your lifestyle and diet for the current season to maintain optimal health balance.
+                        </div>
+                        <button class="btn btn-warning" style="margin-top: 20px;">
+                            <i class="fas fa-leaf"></i> Explore
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Library Tab -->
+        <div id="videos" class="tab-content">
+            <div class="card">
+                <h3><i class="fas fa-video"></i> Educational Video Library</h3>
+                <div class="grid grid-2">
+                    <div class="video-player" onclick="playVideo('dosha-explanation')">
+                        <div class="video-thumbnail">
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div style="padding: 30px; background: white; border-radius: 0 0 20px 20px;">
+                            <h4 style="color: var(--text-primary); margin-bottom: 15px; font-size: 1.4rem;">Understanding Your Dosha</h4>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
+                                A comprehensive 15-minute guide to understanding Vata, Pitta, and Kapha constitutions with practical examples.
+                            </p>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: var(--text-secondary); font-size: 13px; display: flex; align-items: center; gap: 20px;">
+                                    <span><i class="fas fa-clock"></i> 15:32</span>
+                                    <span><i class="fas fa-eye"></i> 12.5K views</span>
+                                </span>
+                                <span style="background: var(--success-gradient); color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                    Popular
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="video-player" onclick="playVideo('abhyanga-demo')">
+                        <div class="video-thumbnail" style="background: var(--success-gradient);">
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div style="padding: 30px; background: white; border-radius: 0 0 20px 20px;">
+                            <h4 style="color: var(--text-primary); margin-bottom: 15px; font-size: 1.4rem;">Self-Abhyanga Massage</h4>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
+                                Step-by-step demonstration of oil massage techniques for daily wellness and stress relief.
+                            </p>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: var(--text-secondary); font-size: 13px; display: flex; align-items: center; gap: 20px;">
+                                    <span><i class="fas fa-clock"></i> 22:15</span>
+                                    <span><i class="fas fa-eye"></i> 8.2K views</span>
+                                </span>
+                                <span style="background: var(--warning-gradient); color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                    New
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Quizzes Tab 
+        <div id="quizzes" class="tab-content">
+            <div class="card">
+                <h3><i class="fas fa-question-circle"></i> Knowledge Assessment Quiz</h3>
+                
+                <div class="quiz-container">
+                    <div class="question">
+                        <h4>1. Which dosha is associated with movement and air element?</h4>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(this, false)">
+                                <div class="quiz-radio"></div>
+                                <span>Pitta - Fire and water elements</span>
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(this, true)">
+                                <div class="quiz-radio"></div>
+                                <span>Vata - Air and space elements</span>
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(this, false)">
+                                <div class="quiz-radio"></div>
+                                <span>Kapha - Earth and water elements</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <h4>2. What is the optimal time for Abhyanga therapy?</h4>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(this, true)">
+                                <div class="quiz-radio"></div>
+                                <span>Early morning before bath</span>
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(this, false)">
+                                <div class="quiz-radio"></div>
+                                <span>Immediately after meals</span>
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(this, false)">
+                                <div class="quiz-radio"></div>
+                                <span>Late evening before sleep</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 40px;">
+                        <button class="btn btn-primary" onclick="submitQuiz()">
+                            <i class="fas fa-check"></i> Submit Quiz
+                        </button>
+                        <button class="btn" onclick="resetQuiz()" style="background: #718096; color: white;">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+
+                    <div id="quizResult" style="display: none; margin-top: 30px; padding: 30px; background: linear-gradient(135deg, #f0fff4, #e6ffed); border-radius: 20px; text-align: center; border: 3px solid #48bb78;">
+                        <h4 style="color: #38a169; margin-bottom: 15px; font-size: 1.5rem;"><i class="fas fa-trophy"></i> Quiz Results</h4>
+                        <p id="scoreText" style="color: var(--text-primary); font-size: 24px; font-weight: 700; margin-bottom: 15px;"></p>
+                        <p style="color: var(--text-secondary); font-size: 18px;">You've earned <strong>25 learning points!</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>-->
+
+    <!-- Panchakarma Assessment Tab -->
+<div id="quizzes" class="tab-content">
+    <div class="card">
+        <h3><i class="fas fa-heartbeat"></i> Panchakarma Need Assessment</h3>
+
+        <div class="quiz-container">
+
+            <!-- Q1 -->
+            <div class="question">
+                <h4>1. How often do you experience fatigue or body heaviness?</h4>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectOption(this, 1)"><div class="quiz-radio"></div><span>Rarely, I feel energetic most of the time.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 2)"><div class="quiz-radio"></div><span>Sometimes after meals or long work.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 3)"><div class="quiz-radio"></div><span>Frequently, especially in the morning.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 4)"><div class="quiz-radio"></div><span>Almost every day, it affects my activity.</span></div>
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="question">
+                <h4>2. How would you describe your digestion?</h4>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectOption(this, 1)"><div class="quiz-radio"></div><span>Stable and healthy digestion.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 2)"><div class="quiz-radio"></div><span>Occasional bloating or gas.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 3)"><div class="quiz-radio"></div><span>Frequent acidity or irregular appetite.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 4)"><div class="quiz-radio"></div><span>Constant issues with digestion and heaviness.</span></div>
+                </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="question">
+                <h4>3. How is your sleep pattern?</h4>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectOption(this, 1)"><div class="quiz-radio"></div><span>Peaceful and regular sleep.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 2)"><div class="quiz-radio"></div><span>Sometimes disturbed by dreams or restlessness.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 3)"><div class="quiz-radio"></div><span>Often disturbed or light sleep.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 4)"><div class="quiz-radio"></div><span>Insomnia or very irregular sleep cycle.</span></div>
+                </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="question">
+                <h4>4. How often do you feel stress, anxiety, or irritability?</h4>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectOption(this, 1)"><div class="quiz-radio"></div><span>Almost never, I stay calm.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 2)"><div class="quiz-radio"></div><span>Sometimes during pressure or deadlines.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 3)"><div class="quiz-radio"></div><span>Frequently, it affects my peace of mind.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 4)"><div class="quiz-radio"></div><span>Constantly anxious or easily irritated.</span></div>
+                </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="question">
+                <h4>5. How is your appetite and eating habit?</h4>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectOption(this, 1)"><div class="quiz-radio"></div><span>Good appetite with regular meals.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 2)"><div class="quiz-radio"></div><span>Sometimes skip meals or overeat.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 3)"><div class="quiz-radio"></div><span>Often irregular eating pattern.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 4)"><div class="quiz-radio"></div><span>Poor appetite or loss of taste frequently.</span></div>
+                </div>
+            </div>
+
+            <!-- Q6 -->
+            <div class="question">
+                <h4>6. How often do you suffer from colds, allergies, or congestion?</h4>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectOption(this, 1)"><div class="quiz-radio"></div><span>Rarely, I have strong immunity.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 2)"><div class="quiz-radio"></div><span>Occasionally during weather change.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 3)"><div class="quiz-radio"></div><span>Frequently, affects my breathing or sinuses.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 4)"><div class="quiz-radio"></div><span>Almost every week, chronic issue.</span></div>
+                </div>
+            </div>
+
+            <!-- Q7 -->
+            <div class="question">
+                <h4>7. How is your skin and hair condition?</h4>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectOption(this, 1)"><div class="quiz-radio"></div><span>Healthy and glowing skin & hair.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 2)"><div class="quiz-radio"></div><span>Sometimes dullness or dryness.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 3)"><div class="quiz-radio"></div><span>Frequent breakouts, dandruff or hair fall.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 4)"><div class="quiz-radio"></div><span>Chronic skin or scalp issues.</span></div>
+                </div>
+            </div>
+
+            <!-- Q8 -->
+            <div class="question">
+                <h4>8. How often do you feel bloated or constipated?</h4>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectOption(this, 1)"><div class="quiz-radio"></div><span>Rarely, bowel movements are normal.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 2)"><div class="quiz-radio"></div><span>Occasionally feel bloated.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 3)"><div class="quiz-radio"></div><span>Frequently constipated or gassy.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 4)"><div class="quiz-radio"></div><span>Chronic constipation and heaviness.</span></div>
+                </div>
+            </div>
+
+            <!-- Q9 -->
+            <div class="question">
+                <h4>9. Do you feel mental fog or lack of concentration?</h4>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectOption(this, 1)"><div class="quiz-radio"></div><span>Never, I stay mentally alert.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 2)"><div class="quiz-radio"></div><span>Sometimes during fatigue.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 3)"><div class="quiz-radio"></div><span>Often distracted or forgetful.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 4)"><div class="quiz-radio"></div><span>Constant brain fog or confusion.</span></div>
+                </div>
+            </div>
+
+            <!-- Q10 -->
+            <div class="question">
+                <h4>10. How often do you experience joint stiffness or pain?</h4>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectOption(this, 1)"><div class="quiz-radio"></div><span>Never or very rarely.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 2)"><div class="quiz-radio"></div><span>Occasionally after long hours or cold weather.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 3)"><div class="quiz-radio"></div><span>Frequently, mild joint pain or stiffness.</span></div>
+                    <div class="quiz-option" onclick="selectOption(this, 4)"><div class="quiz-radio"></div><span>Chronic or severe joint pain.</span></div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="btn btn-primary" onclick="submitAssessment()">
+                    <i class="fas fa-check"></i> Submit Assessment
+                </button>
+                <button class="btn" onclick="resetQuiz()" style="background: #718096; color: white;">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+
+            <!-- Results -->
+            <div id="quizResult" style="display: none; margin-top: 30px; padding: 30px; background: linear-gradient(135deg, #f0fff4, #e6ffed); border-radius: 20px; text-align: center; border: 3px solid #48bb78;">
+                <h4 style="color: #38a169; margin-bottom: 15px; font-size: 1.5rem;">
+                    <i class="fas fa-leaf"></i> Assessment Result
+                </h4>
+                <p id="scoreText" style="color: var(--text-primary); font-size: 24px; font-weight: 700; margin-bottom: 10px;"></p>
+                <p id="resultText" style="color: var(--text-secondary); font-size: 18px;"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <!-- Progress Tab -->
+        <div id="progress" class="tab-content">
+            <div class="card">
+                <h3><i class="fas fa-chart-line"></i> Your Learning Progress</h3>
+                
+                <div class="streak-counter">
+                    <div class="streak-number" id="streakNumber">7</div>
+                    <div class="streak-text">Day Learning Streak</div>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="achievement-badge">
+                        <div class="badge-icon"><i class="fas fa-medal"></i></div>
+                        <div class="badge-title">Beginner Badge</div>
+                        <div class="badge-description">Completed your first module</div>
+                    </div>
+                    
+                    <div class="achievement-badge" style="background: var(--success-gradient);">
+                        <div class="badge-icon"><i class="fas fa-trophy"></i></div>
+                        <div class="badge-title">Quiz Master</div>
+                        <div class="badge-description">Scored 100% on 5 quizzes</div>
+                    </div>
+                    
+                    <div class="achievement-badge" style="background: var(--warning-gradient);">
+                        <div class="badge-icon"><i class="fas fa-fire"></i></div>
+                        <div class="badge-title">Streak Champion</div>
+                        <div class="badge-description">7-day learning streak</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Community Tab -->
+        <div id="community" class="tab-content">
+            <div class="card">
+                <h3><i class="fas fa-users"></i> Learning Community</h3>
+                <div class="grid grid-2">
+                    <div style="background: linear-gradient(135deg, #f7fafc, #edf2f7); padding: 25px; border-radius: 15px;">
+                        <h4 style="margin-bottom: 20px;"><i class="fas fa-comments"></i> Recent Discussions</h4>
+                        <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='translateX(0)'">
+                            <div style="font-weight: 600; color: var(--text-primary);">Best oils for Vata dosha?</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">by DrAyurveda • 2 hours ago • 12 replies</div>
+                        </div>
+                        <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='translateX(0)'">
+                            <div style="font-weight: 600; color: var(--text-primary);">Panchakarma success stories</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">by WellnessSeeker • 5 hours ago • 8 replies</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #f7fafc, #edf2f7); padding: 25px; border-radius: 15px;">
+                        <h4 style="margin-bottom: 20px;"><i class="fas fa-star"></i> Top Contributors</h4>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding: 10px; background: white; border-radius: 10px;">
+                            <div style="width: 40px; height: 40px; background: var(--primary-gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">DA</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">Dr. Ayurveda Expert</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">1,250 points • Expert</div>
+                            </div>
+                            <div style="font-size: 20px;">🏆</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding: 10px; background: white; border-radius: 10px;">
+                            <div style="width: 40px; height: 40px; background: var(--success-gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">WS</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">Wellness Seeker</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">890 points • Advanced</div>
+                            </div>
+                            <div style="font-size: 20px;">🥈</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced floating chat -->
+    <div class="floating-chat" onclick="toggleChat()">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <!-- Enhanced notification system -->
+    <div id="notification" class="notification" style="display: none;"></div>
+
+    <script>
+        // Enhanced JavaScript functionality
+        let currentStreak = 7;
+        let totalPoints = 1250;
+        let currentTab = 'learning';
+        let chatOpen = false;
+
+        // Initialize particles animation
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 6 + 2;
+                const startX = Math.random() * window.innerWidth;
+                const duration = Math.random() * 10 + 10;
+                const delay = Math.random() * 5;
+                
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = startX + 'px';
+                particle.style.animationDuration = duration + 's';
+                particle.style.animationDelay = delay + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Enhanced typing animation
+        function typeText() {
+            const texts = [
+                "Interactive Learning • Personalized Content • Gamified Experience",
+                "Discover Ancient Wisdom • Modern Technology • Holistic Health",
+                "Learn at Your Pace • Track Progress • Earn Achievements",
+                "Join Community • Share Knowledge • Transform Your Health"
+            ];
+            
+            let textIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            const typingElement = document.getElementById('typingText');
+            
+            function type() {
+                const currentText = texts[textIndex];
+                
+                if (isDeleting) {
+                    typingElement.textContent = currentText.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    typingElement.textContent = currentText.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+                
+                let typeSpeed = isDeleting ? 50 : 100;
+                
+                if (!isDeleting && charIndex === currentText.length) {
+                    typeSpeed = 2000;
+                    isDeleting = true;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    textIndex = (textIndex + 1) % texts.length;
+                    typeSpeed = 500;
+                }
+                
+                setTimeout(type, typeSpeed);
+            }
+            
+            type();
+        }
+
+        // Enhanced tab switching with animations
+        function showTab(tabName) {
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Hide all content with fade out
+            document.querySelectorAll('.tab-content').forEach(content => {
+                if (content.classList.contains('active')) {
+                    content.style.animation = 'fadeOut 0.3s ease';
+                    setTimeout(() => {
+                        content.classList.remove('active');
+                        content.style.animation = '';
+                    }, 300);
+                }
+            });
+            
+            // Show selected content with fade in
+            setTimeout(() => {
+                document.getElementById(tabName).classList.add('active');
+                currentTab = tabName;
+                showNotification(`Switched to ${tabName} section`, 'success');
+            }, 300);
+        }
+
+        // Enhanced module opening
+        function openModule(moduleId) {
+            const module = event.currentTarget;
+            const progress = module.getAttribute('data-progress');
+            
+            // Add click animation
+            module.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                module.style.transform = '';
+            }, 150);
+            
+            showNotification(`Opening module: ${moduleId}`, 'success');
+            
+            // Simulate progress update
+            setTimeout(() => {
+                const newProgress = Math.min(100, parseInt(progress) + 10);
+                updateModuleProgress(module, newProgress);
+            }, 1000);
+        }
+
+        // Update module progress with animation
+        function updateModuleProgress(module, newProgress) {
+            const progressCircle = module.querySelector('.progress-circle');
+            const progressText = module.querySelector('.progress-text');
+            const angle = (newProgress / 100) * 360;
+            
+            progressCircle.style.background = `conic-gradient(#48bb78 ${angle}deg, #e2e8f0 ${angle}deg)`;
+            progressText.textContent = newProgress + '%';
+            
+            // Update data attribute
+            module.setAttribute('data-progress', newProgress);
+            
+            // Show completion notification
+            if (newProgress === 100) {
+                showNotification('Module completed! +50 points earned!', 'success');
+                totalPoints += 50;
+                updateStreak();
+            }
+        }
+
+        // Enhanced video player
+        function playVideo(videoId) {
+            const player = event.currentTarget;
+            const thumbnail = player.querySelector('.video-thumbnail');
+            
+            // Add play animation
+            thumbnail.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                thumbnail.style.transform = '';
+            }, 200);
+            
+            showNotification(`Playing video: ${videoId}`, 'success');
+        }
+
+            let selectedScores = [];
+        
+            function selectOption(optionElement, score) {
+                const question = optionElement.closest('.question');
+                const questionIndex = Array.from(document.querySelectorAll('.question')).indexOf(question);
+                
+                question.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('selected'));
+                optionElement.classList.add('selected');
+                selectedScores[questionIndex] = score;
+        
+                optionElement.style.transform = 'scale(1.05)';
+                setTimeout(() => { optionElement.style.transform = ''; }, 200);
+            }
+        
+            function submitAssessment() {
+                const totalQuestions = document.querySelectorAll('.question').length;
+                if (selectedScores.length < totalQuestions || selectedScores.includes(undefined)) {
+                    alert('Please answer all questions!');
+                    return;
+                }
+        
+                const totalScore = selectedScores.reduce((a, b) => a + b, 0);
+                const percentage = Math.round((totalScore / (totalQuestions * 4)) * 100);
+                let resultMessage = "";
+        
+                if (totalScore <= 15) resultMessage = "🟢 You are balanced. Panchakarma is not required currently.";
+                else if (totalScore <= 25) resultMessage = "🟡 Mild imbalance detected. Gentle detox or dietary change recommended.";
+                else if (totalScore <= 33) resultMessage = "🟠 Moderate imbalance found. Panchakarma may be beneficial soon.";
+                else resultMessage = "🔴 High imbalance! Panchakarma therapy is strongly recommended.";
+        
+                document.getElementById('scoreText').innerText = `Your Score: ${totalScore}/${totalQuestions * 4} (${percentage}%)`;
+                document.getElementById('resultText').innerText = resultMessage;
+        
+                const resultDiv = document.getElementById('quizResult');
+                resultDiv.style.display = 'block';
+                resultDiv.scrollIntoView({ behavior: 'smooth' });
+            }
+        
+            function resetQuiz() {
+                selectedScores = [];
+                document.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('selected'));
+                document.getElementById('quizResult').style.display = 'none';
+            }
+            // Update points and streak
+         //   totalPoints += 25;
+         //   updateStreak();
+            
+          //  showNotification(`Quiz completed! Score: ${percentage}%`, 'success');
+       // }
+
+        /*function resetQuiz() {
+            selectedAnswers = [];
+            
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            document.getElementById('quizResult').style.display = 'none';
+            showNotification('Quiz reset!', 'success');
+        }*/
+
+        // Enhanced notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.4s ease';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                    notification.style.animation = '';
+                }, 400);
+            }, 3000);
+        }
+
+        // Enhanced streak and progress tracking
+        function updateStreak() {
+            currentStreak++;
+            const streakElement = document.getElementById('streakNumber');
+            streakElement.textContent = currentStreak;
+            
+            // Add bounce animation
+            streakElement.style.animation = 'none';
+            setTimeout(() => {
+                streakElement.style.animation = 'bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+            }, 10);
+            
+            if (currentStreak % 5 === 0) {
+                showNotification(`Amazing! ${currentStreak}-day streak!`, 'success');
+            }
+        }
+
+        // Enhanced chat functionality
+        function toggleChat() {
+            const chatButton = document.querySelector('.floating-chat');
+            
+            if (!chatOpen) {
+                // Create chat window
+                const chatWindow = document.createElement('div');
+                chatWindow.id = 'chatWindow';
+                chatWindow.className = 'chatbot-container';
+                chatWindow.innerHTML = `
+                    <div class="chatbot-header">
+                        <h3>AarogyaMitra Assistant</h3>
+                        <button class="chatbot-close" onclick="closeChat()">&times;</button>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message bot">
+                            <div class="message-bubble">
+                                Hello! I'm here to help you with your Ayurvedic learning journey. How can I assist you today?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <div class="chat-input-row">
+                            <input type="text" class="chat-input" placeholder="Type your message..." onkeypress="handleChatInput(event)">
+                            <button class="chat-send" onclick="sendChatMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(chatWindow);
+                chatOpen = true;
+                
+                // Update button icon
+                chatButton.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                closeChat();
+            }
+        }
+
+        function closeChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            if (chatWindow) {
+                chatWindow.style.animation = 'slideOutDown 0.4s ease';
+                setTimeout(() => {
+                    chatWindow.remove();
+                }, 400);
+            }
+            
+            chatOpen = false;
+            document.querySelector('.floating-chat').innerHTML = '<i class="fas fa-comments"></i>';
+        }
+
+        function handleChatInput(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.querySelector('.chat-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                addChatMessage(message, 'user');
+                input.value = '';
+                
+                // Simulate bot response
+                setTimeout(() => {
+                    const responses = [
+                        "That's a great question! Let me help you with that.",
+                        "Based on Ayurvedic principles, I'd recommend...",
+                        "Have you tried checking our learning modules for more detailed information?",
+                        "Your progress is impressive! Keep up the great work.",
+                        "Would you like me to suggest a personalized learning path?"
+                    ];
+                    
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    addChatMessage(randomResponse, 'bot');
+                }, 1000);
+            }
+        }
+
+        function addChatMessage(message, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `<div class="message-bubble">${message}</div>`;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Enhanced progress visualization
+        function animateProgressCircles() {
+            const circles = document.querySelectorAll('.progress-circle');
+            circles.forEach(circle => {
+                const text = circle.querySelector('.progress-text');
+                if (text) {
+                    const progress = parseInt(text.textContent);
+                    const angle = (progress / 100) * 360;
+                    circle.style.background = `conic-gradient(#48bb78 ${angle}deg, #e2e8f0 ${angle}deg)`;
+                }
+            });
+        }
+
+        // Enhanced interaction feedback
+        function addHoverEffects() {
+            const interactiveElements = document.querySelectorAll('.learning-module, .video-player, .achievement-badge');
+            
+            interactiveElements.forEach(element => {
+                element.addEventListener('mouseenter', () => {
+                    element.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                });
+                
+                element.addEventListener('mouseleave', () => {
+                    element.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                });
+            });
+        }
+
+        // Enhanced stats counter animation
+        function animateStats() {
+            const statsElements = document.querySelectorAll('.stats-number');
+            statsElements.forEach(stat => {
+                const finalValue = parseInt(stat.textContent);
+                let currentValue = 0;
+                const increment = finalValue / 50;
+                
+                const counter = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= finalValue) {
+                        currentValue = finalValue;
+                        clearInterval(counter);
+                    }
+                    stat.textContent = Math.floor(currentValue);
+                }, 30);
+            });
+        }
+
+        // Enhanced page initialization
+        function initializePage() {
+            createParticles();
+            typeText();
+            animateProgressCircles();
+            addHoverEffects();
+            
+            // Welcome notification
+            setTimeout(() => {
+                showNotification('Welcome to your personalized learning hub!', 'success');
+            }, 1000);
+            
+            // Periodic engagement prompts
+            setInterval(() => {
+                const prompts = [
+                    'Ready to continue your learning journey?',
+                    'Check out the new video in your library!',
+                    'Your learning streak is looking great!',
+                    'New discussions available in the community!'
+                ];
+                
+                const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+                if (Math.random() > 0.7) { // 30% chance
+                    showNotification(randomPrompt, 'info');
+                }
+            }, 60000); // Every minute
+        }
+
+        // Enhanced responsive behavior
+        function handleResize() {
+            const width = window.innerWidth;
+            const container = document.querySelector('.container');
+            
+            if (width < 768) {
+                container.style.padding = '10px';
+            } else if (width < 1200) {
+                container.style.padding = '15px';
+            } else {
+                container.style.padding = '20px';
+            }
+        }
+
+        // Event listeners
+        window.addEventListener('load', initializePage);
+        window.addEventListener('resize', handleResize);
+
+        // Enhanced CSS animations for fade out
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from { 
+                    opacity: 1; 
+                    transform: translateX(0);
+                }
+                to { 
+                    opacity: 0; 
+                    transform: translateX(-20px);
+                }
+            }
+            
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+            
+            @keyframes slideOutDown {
+                from {
+                    transform: translateY(0) scale(1);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateY(100px) scale(0.8);
+                    opacity: 0;
+                }
+            }
+            
+            .chatbot-container {
+                position: fixed;
+                bottom: 120px;
+                right: 30px;
+                width: 380px;
+                height: 550px;
+                background: white;
+                border-radius: 20px;
+                box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+                z-index: 1001;
+                display: flex;
+                flex-direction: column;
+                animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                overflow: hidden;
+                border: 2px solid rgba(102, 126, 234, 0.2);
+            }
+            
+            .chatbot-header {
+                background: var(--primary-gradient);
+                color: white;
+                padding: 25px;
+                text-align: center;
+                position: relative;
+            }
+            
+            .chatbot-close {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 24px;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+            }
+            
+            .chatbot-close:hover {
+                transform: scale(1.2);
+                background: rgba(255, 255, 255, 0.2);
+            }
+            
+            .chat-messages {
+                flex: 1;
+                padding: 20px;
+                overflow-y: auto;
+                scroll-behavior: smooth;
+                background: #f8f9fa;
+            }
+            
+            .message {
+                margin-bottom: 15px;
+                animation: fadeIn 0.3s ease;
+            }
+            
+            .message.bot {
+                text-align: left;
+            }
+            
+            .message.user {
+                text-align: right;
+            }
+            
+            .message-bubble {
+                display: inline-block;
+                padding: 12px 18px;
+                border-radius: 18px;
+                max-width: 80%;
+                word-wrap: break-word;
+                font-size: 14px;
+                line-height: 1.4;
+            }
+            
+            .message.bot .message-bubble {
+                background: linear-gradient(135deg, #f7fafc, #edf2f7);
+                color: var(--text-primary);
+                border: 1px solid #e2e8f0;
+            }
+            
+            .message.user .message-bubble {
+                background: var(--primary-gradient);
+                color: white;
+            }
+            
+            .chat-input-container {
+                padding: 20px;
+                border-top: 1px solid #e2e8f0;
+                background: white;
+            }
+            
+            .chat-input-row {
+                display: flex;
+                gap: 12px;
+                align-items: flex-end;
+            }
+            
+            .chat-input {
+                flex: 1;
+                padding: 14px 18px;
+                border: 2px solid #e2e8f0;
+                border-radius: 25px;
+                font-size: 14px;
+                transition: border-color 0.3s ease;
+                resize: none;
+                outline: none;
+            }
+            
+            .chat-input:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+            
+            .chat-send {
+                background: var(--primary-gradient);
+                color: white;
+                border: none;
+                padding: 14px;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                width: 48px;
+                height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .chat-send:hover {
+                transform: scale(1.1);
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            }
+            
+            @media (max-width: 768px) {
+                .chatbot-container {
+                    width: 90%;
+                    right: 5%;
+                    left: 5%;
+                    height: 70vh;
+                    bottom: 100px;
+                }
+            }
+            
+            .quiz-radio {
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                border: 3px solid #e2e8f0;
+                position: relative;
+                transition: all 0.3s ease;
+                flex-shrink: 0;
+            }
+            
+            .quiz-option.selected .quiz-radio {
+                border-color: #48bb78;
+                background: #48bb78;
+            }
+            
+            .quiz-option.selected .quiz-radio::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: white;
+                transform: translate(-50%, -50%);
+            }
+            
+            .module-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .module-info {
+                flex: 1;
+            }
+            
+            .module-description {
+                color: var(--text-secondary);
+                font-size: 14px;
+                line-height: 1.6;
+                margin-bottom: 12px;
+            }
+            
+            .module-meta {
+                display: flex;
+                gap: 15px;
+                align-items: center;
+                color: var(--text-secondary);
+                font-size: 12px;
+                margin-top: 12px;
+            }
+            
+            .module-meta span {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+            
+            .module-progress {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                min-width: 120px;
+                justify-content: flex-end;
+            }
+            
+            .progress-text {
+                position: relative;
+                z-index: 1;
+                font-weight: 800;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+
+{% endblock body%}

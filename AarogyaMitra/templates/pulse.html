@@ -1,0 +1,1183 @@
+
+{% load static %}
+
+{% block body %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Pulse Analysis - AarogyaMitra</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #72c7b1;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .camera-section {
+            text-align: center;
+            position: relative;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        #video {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            background: #000;
+        }
+
+        .pulse-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            border: 3px solid #ff6b6b;
+            border-radius: 50%;
+            background: rgba(255, 107, 107, 0.2);
+            animation: pulseDetection 1s ease-in-out infinite;
+            display: none;
+        }
+
+        @keyframes pulseDetection {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.4; }
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #48bb78;
+        }
+
+        .instructions h4 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions ol {
+            color: #718096;
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            margin: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565, #e53e3e);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .pulse-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .pulse-metric {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .pulse-metric:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .pulse-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 5px;
+        }
+
+        .pulse-label {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .dosha-analysis {
+            margin-top: 20px;
+        }
+
+        .dosha-bars {
+            margin: 20px 0;
+        }
+
+        .dosha-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+
+        .dosha-name {
+            font-weight: 600;
+            color: #4a5568;
+            min-width: 60px;
+        }
+
+        .dosha-progress {
+            flex: 1;
+            height: 25px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .dosha-fill {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 1s ease;
+            position: relative;
+        }
+
+        .dosha-fill.vata {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .dosha-fill.pitta {
+            background: linear-gradient(135deg, #f56565, #e53e3e);
+        }
+
+        .dosha-fill.kapha {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+        }
+
+        .dosha-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .dosha-percentage {
+            font-weight: bold;
+            color: #4a5568;
+            min-width: 40px;
+        }
+
+        .pulse-waveform {
+            height: 200px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wave-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+        }
+
+        .recommendations {
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .recommendations h4 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recommendation-item {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border-left: 4px solid #f56565;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .recommendation-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .recommendation-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .status-indicator.scanning {
+            background: linear-gradient(135deg, #fef5e7, #fed7aa);
+            color: #c05621;
+        }
+
+        .status-indicator.analyzing {
+            background: linear-gradient(135deg, #e6ffed, #d4ecdd);
+            color: #38a169;
+        }
+
+        .status-indicator.complete {
+            background: linear-gradient(135deg, #e6fffa, #b2f5ea);
+            color: #38b2ac;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .full-width-card {
+            grid-column: 1 / -1;
+        }
+
+        .ai-insights {
+            background: linear-gradient(135deg, #f0fff4, #e6ffed);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            border-left: 5px solid #48bb78;
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: start;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 3px solid #48bb78;
+        }
+
+        .insight-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .floating-action {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .pulse-animation {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 107, 107, 0.6); }
+            50% { box-shadow: 0 0 40px rgba(255, 107, 107, 0.9); }
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .pulse-data {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-heartbeat pulse-animation"></i>
+                Pulse Analysis
+                <i class="fas fa-brain"></i>
+            </h1>
+            <p>Revolutionary Dosha Detection</p>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="main-grid">
+            <!-- Camera Section -->
+            <div class="card">
+                <h3><i class="fas fa-camera"></i> Pulse Detection Camera</h3>
+                
+                <div class="camera-section">
+                    <div class="video-container">
+                        <video id="video" autoplay muted playsinline></video>
+                        <div class="pulse-overlay" id="pulseOverlay"></div>
+                    </div>
+                    
+                    <div class="instructions">
+                        <h4><i class="fas fa-info-circle"></i> How to Use</h4>
+                        <ol>
+                            <li>Place your fingertip over the camera lens</li>
+                            <li>Cover the flashlight with your finger</li>
+                            <li>Stay still for 30 seconds</li>
+                            <li>Breathe normally during scanning</li>
+                            <li>Keep finger pressure consistent</li>
+                        </ol>
+                    </div>
+
+                    <div id="statusIndicator" class="status-indicator" style="display: none;">
+                        <span class="loading-spinner"></span>
+                        <span id="statusText">Initializing camera...</span>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <button id="startBtn" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Start Pulse Analysis
+                        </button>
+                        <button id="stopBtn" class="btn btn-danger" style="display: none;">
+                            <i class="fas fa-stop"></i> Stop Analysis
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Data -->
+            <div class="card">
+                <h3><i class="fas fa-chart-line"></i> Real-time Pulse Data</h3>
+                
+                <div class="pulse-data">
+                    <div class="pulse-metric">
+                        <div class="pulse-value" id="heartRate">--</div>
+                        <div class="pulse-label">BPM</div>
+                    </div>
+                    <div class="pulse-metric">
+                        <div class="pulse-value" id="pulseStrength">--</div>
+                        <div class="pulse-label">Strength</div>
+                    </div>
+                    <div class="pulse-metric">
+                        <div class="pulse-value" id="pulseRhythm">--</div>
+                        <div class="pulse-label">Rhythm</div>
+                    </div>
+                    <div class="pulse-metric">
+                        <div class="pulse-value" id="pulseQuality">--</div>
+                        <div class="pulse-label">Quality</div>
+                    </div>
+                </div>
+
+                <div class="pulse-waveform">
+                    <canvas id="waveCanvas" class="wave-canvas"></canvas>
+                </div>
+
+                <div class="dosha-analysis">
+                    <h4><i class="fas fa-yin-yang"></i> Dosha Analysis</h4>
+                    <div class="dosha-bars">
+                        <div class="dosha-bar">
+                            <div class="dosha-name">Vata</div>
+                            <div class="dosha-progress">
+                                <div class="dosha-fill vata" id="vataFill" style="width: 0%;"></div>
+                            </div>
+                            <div class="dosha-percentage" id="vataPercent">0%</div>
+                        </div>
+                        <div class="dosha-bar">
+                            <div class="dosha-name">Pitta</div>
+                            <div class="dosha-progress">
+                                <div class="dosha-fill pitta" id="pittaFill" style="width: 0%;"></div>
+                            </div>
+                            <div class="dosha-percentage" id="pittaPercent">0%</div>
+                        </div>
+                        <div class="dosha-bar">
+                            <div class="dosha-name">Kapha</div>
+                            <div class="dosha-progress">
+                                <div class="dosha-fill kapha" id="kaphaFill" style="width: 0%;"></div>
+                            </div>
+                            <div class="dosha-percentage" id="kaphaPercent">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Insights (Full Width) -->
+        <div class="card full-width-card">
+            <h3><i class="fas fa-brain"></i> Insights & Recommendations</h3>
+            
+            <div class="ai-insights">
+                <h4><i class="fas fa-lightbulb"></i> Smart Health Analysis</h4>
+                <div id="aiInsights">
+                    <div class="insight-item">
+                        <div class="insight-icon"><i class="fas fa-info"></i></div>
+                        <div>Start pulse analysis to get personalized Ayurvedic insights based on your pulse patterns.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recommendations">
+                <h4><i class="fas fa-prescription"></i> Recommended Therapies</h4>
+                <div id="therapyRecommendations">
+                    <div class="recommendation-item">
+                        <div class="recommendation-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div>Complete pulse analysis to receive personalized Panchakarma therapy recommendations</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button 
+    <div class="floating-action">
+        <button id="emergencyBtn" class="btn btn-danger pulse-animation">
+            <i class="fas fa-exclamation-triangle"></i> Emergency Alert
+        </button>
+    </div>-->
+
+    <script>
+        // Global variables
+        let video, canvas, ctx;
+        let isAnalyzing = false;
+        let pulseData = [];
+        let heartRateHistory = [];
+        let analysisInterval;
+        let waveAnimationId;
+        let currentPhase = 'idle'; // idle, scanning, analyzing, complete
+
+        // Pulse analysis state
+        let pulseMetrics = {
+            heartRate: 0,
+            strength: 0,
+            rhythm: 'Regular',
+            quality: 'Normal',
+            vataLevel: 0,
+            pittaLevel: 0,
+            kaphaLevel: 0
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCamera();
+            setupEventListeners();
+            initializeWaveCanvas();
+        });
+
+        function initializeCamera() {
+            video = document.getElementById('video');
+            
+            // Check for camera support
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showError('Camera not supported on this device');
+                return;
+            }
+        }
+
+        function setupEventListeners() {
+            document.getElementById('startBtn').addEventListener('click', startPulseAnalysis);
+            document.getElementById('stopBtn').addEventListener('click', stopPulseAnalysis);
+            document.getElementById('emergencyBtn').addEventListener('click', handleEmergency);
+        }
+
+        function initializeWaveCanvas() {
+            canvas = document.getElementById('waveCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            // Start wave animation
+            animateWave();
+        }
+
+        async function startPulseAnalysis() {
+            try {
+                updateStatus('scanning', 'Initializing camera...');
+                
+                // Request camera access
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 640 },
+                        height: { ideal: 480 }
+                    } 
+                });
+                
+                video.srcObject = stream;
+                video.play();
+                
+                // Wait for video to load
+                video.addEventListener('loadedmetadata', () => {
+                    startAnalysisProcess();
+                });
+                
+            } catch (error) {
+                console.error('Camera access error:', error);
+                showError('Unable to access camera. Please ensure camera permissions are granted.');
+                resetToIdle();
+            }
+        }
+
+        function startAnalysisProcess() {
+            isAnalyzing = true;
+            currentPhase = 'scanning';
+            
+            // Update UI
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'inline-flex';
+            document.getElementById('pulseOverlay').style.display = 'block';
+            
+            updateStatus('scanning', 'Place finger on camera lens...');
+            
+            // Start pulse detection after 3 seconds
+            setTimeout(() => {
+                if (isAnalyzing) {
+                    beginPulseDetection();
+                }
+            }, 3000);
+        }
+
+        function beginPulseDetection() {
+            updateStatus('analyzing', 'Analyzing pulse patterns...');
+            currentPhase = 'analyzing';
+            
+            // Simulate pulse detection process
+            let analysisProgress = 0;
+            const maxAnalysisTime = 30000; // 30 seconds
+            const updateInterval = 100; // Update every 100ms
+            
+            analysisInterval = setInterval(() => {
+                analysisProgress += updateInterval;
+                
+                // Simulate real-time pulse data
+                simulatePulseData();
+                
+                // Update progress
+                const progress = (analysisProgress / maxAnalysisTime) * 100;
+                updateStatus('analyzing', `Analyzing... ${Math.round(progress)}%`);
+                
+                // Complete analysis
+                if (analysisProgress >= maxAnalysisTime) {
+                    completeAnalysis();
+                }
+            }, updateInterval);
+        }
+
+        function simulatePulseData() {
+            // Simulate realistic pulse data
+            const baseHeartRate = 72;
+            const variation = Math.sin(Date.now() / 1000) * 5;
+            const currentHeartRate = Math.round(baseHeartRate + variation + (Math.random() - 0.5) * 10);
+            
+            pulseMetrics.heartRate = currentHeartRate;
+            pulseMetrics.strength = Math.round(70 + Math.random() * 20);
+            
+            // Simulate dosha analysis based on pulse characteristics
+            const time = Date.now() / 1000;
+            pulseMetrics.vataLevel = Math.max(0, Math.min(100, 30 + Math.sin(time * 0.5) * 20));
+            pulseMetrics.pittaLevel = Math.max(0, Math.min(100, 35 + Math.cos(time * 0.3) * 15));
+            pulseMetrics.kaphaLevel = Math.max(0, Math.min(100, 35 + Math.sin(time * 0.7) * 10));
+            
+            // Normalize dosha levels to 100%
+            const total = pulseMetrics.vataLevel + pulseMetrics.pittaLevel + pulseMetrics.kaphaLevel;
+            if (total > 0) {
+                pulseMetrics.vataLevel = (pulseMetrics.vataLevel / total) * 100;
+                pulseMetrics.pittaLevel = (pulseMetrics.pittaLevel / total) * 100;
+                pulseMetrics.kaphaLevel = (pulseMetrics.kaphaLevel / total) * 100;
+            }
+            
+            // Update quality and rhythm based on data
+            pulseMetrics.rhythm = currentHeartRate > 80 ? 'Fast' : currentHeartRate < 60 ? 'Slow' : 'Regular';
+            pulseMetrics.quality = pulseMetrics.strength > 80 ? 'Strong' : pulseMetrics.strength < 50 ? 'Weak' : 'Normal';
+            
+            updateRealTimeDisplay();
+        }
+
+        function updateRealTimeDisplay() {
+            // Update pulse metrics
+            document.getElementById('heartRate').textContent = pulseMetrics.heartRate;
+            document.getElementById('pulseStrength').textContent = pulseMetrics.strength;
+            document.getElementById('pulseRhythm').textContent = pulseMetrics.rhythm;
+            document.getElementById('pulseQuality').textContent = pulseMetrics.quality;
+            
+            // Update dosha bars
+            document.getElementById('vataFill').style.width = `${pulseMetrics.vataLevel}%`;
+            document.getElementById('pittaFill').style.width = `${pulseMetrics.pittaLevel}%`;
+            document.getElementById('kaphaFill').style.width = `${pulseMetrics.kaphaLevel}%`;
+            
+            document.getElementById('vataPercent').textContent = `${Math.round(pulseMetrics.vataLevel)}%`;
+            document.getElementById('pittaPercent').textContent = `${Math.round(pulseMetrics.pittaLevel)}%`;
+            document.getElementById('kaphaPercent').textContent = `${Math.round(pulseMetrics.kaphaLevel)}%`;
+        }
+
+        function completeAnalysis() {
+            clearInterval(analysisInterval);
+            currentPhase = 'complete';
+            
+            updateStatus('complete', 'Analysis complete! Generating insights...');
+            
+            // Generate AI insights and recommendations
+            setTimeout(() => {
+                generateAIInsights();
+                generateTherapyRecommendations();
+                updateStatus('complete', 'Ready for new analysis');
+            }, 2000);
+        }
+
+        function generateAIInsights() {
+            const insights = document.getElementById('aiInsights');
+            const dominantDosha = getDominantDosha();
+            
+            const insightsList = [
+                {
+                    icon: 'fas fa-heartbeat',
+                    text: `Your pulse rate of ${pulseMetrics.heartRate} BPM indicates ${getPulseCategory()} cardiovascular health.`
+                },
+                {
+                    icon: 'fas fa-yin-yang',
+                    text: `${dominantDosha.name} dosha is dominant (${Math.round(dominantDosha.level)}%), suggesting ${getDoshaCharacteristics(dominantDosha.name)}.`
+                },
+                {
+                    icon: 'fas fa-chart-line',
+                    text: `Pulse strength of ${pulseMetrics.strength} indicates ${getStrengthAssessment()} constitution.`
+                },
+                {
+                    icon: 'fas fa-leaf',
+                    text: getPersonalizedAdvice(dominantDosha.name)
+                }
+            ];
+            
+            insights.innerHTML = '<h4><i class="fas fa-lightbulb"></i> Smart Health Analysis</h4>';
+            
+            insightsList.forEach((insight, index) => {
+                setTimeout(() => {
+                    const insightElement = document.createElement('div');
+                    insightElement.className = 'insight-item';
+                    insightElement.style.animation = 'slideIn 0.5s ease';
+                    insightElement.innerHTML = `
+                        <div class="insight-icon"><i class="${insight.icon}"></i></div>
+                        <div>${insight.text}</div>
+                    `;
+                    insights.appendChild(insightElement);
+                }, index * 500);
+            });
+        }
+
+        function generateTherapyRecommendations() {
+            const recommendations = document.getElementById('therapyRecommendations');
+            const dominantDosha = getDominantDosha();
+            
+            const therapyList = getTherapyRecommendations(dominantDosha.name);
+            
+            recommendations.innerHTML = '<h4><i class="fas fa-prescription"></i> Recommended Therapies</h4>';
+            
+            therapyList.forEach((therapy, index) => {
+                setTimeout(() => {
+                    const therapyElement = document.createElement('div');
+                    therapyElement.className = 'recommendation-item';
+                    therapyElement.style.animation = 'slideIn 0.5s ease';
+                    therapyElement.innerHTML = `
+                        <div class="recommendation-icon" style="background: ${therapy.color};">
+                            <i class="${therapy.icon}"></i>
+                        </div>
+                        <div>
+                            <strong>${therapy.name}</strong><br>
+                            <small>${therapy.description}</small>
+                        </div>
+                    `;
+                    recommendations.appendChild(therapyElement);
+                }, index * 300);
+            });
+        }
+
+        function getDominantDosha() {
+            const doshas = [
+                { name: 'Vata', level: pulseMetrics.vataLevel },
+                { name: 'Pitta', level: pulseMetrics.pittaLevel },
+                { name: 'Kapha', level: pulseMetrics.kaphaLevel }
+            ];
+            
+            return doshas.reduce((prev, current) => (prev.level > current.level) ? prev : current);
+        }
+
+        function getPulseCategory() {
+            const rate = pulseMetrics.heartRate;
+            if (rate < 60) return 'bradycardic';
+            if (rate > 100) return 'tachycardic';
+            return 'normal';
+        }
+
+        function getDoshaCharacteristics(dosha) {
+            const characteristics = {
+                'Vata': 'creative, energetic personality with possible tendency toward anxiety and restlessness',
+                'Pitta': 'focused, ambitious nature with strong digestion and potential for heat-related issues',
+                'Kapha': 'calm, stable constitution with strong immunity but tendency toward sluggishness'
+            };
+            return characteristics[dosha] || 'balanced constitution';
+        }
+
+        function getStrengthAssessment() {
+            if (pulseMetrics.strength > 80) return 'robust';
+            if (pulseMetrics.strength < 50) return 'delicate';
+            return 'moderate';
+        }
+
+        function getPersonalizedAdvice(dominantDosha) {
+            const advice = {
+                'Vata': 'Focus on grounding practices, warm foods, and regular routine to balance your active nature.',
+                'Pitta': 'Incorporate cooling therapies, avoid excessive heat, and practice moderation in activities.',
+                'Kapha': 'Engage in stimulating activities, favor light foods, and maintain an active lifestyle.'
+            };
+            return advice[dominantDosha] || 'Maintain balance through mindful living and regular self-care.';
+        }
+
+        function getTherapyRecommendations(dominantDosha) {
+            const therapies = {
+                'Vata': [
+                    {
+                        name: 'Abhyanga (Oil Massage)',
+                        description: 'Warm oil massage to calm nervous system and improve circulation',
+                        icon: 'fas fa-hand-paper',
+                        color: 'linear-gradient(135deg, #667eea, #764ba2)'
+                    },
+                    {
+                        name: 'Shirodhara',
+                        description: 'Continuous oil pouring to reduce anxiety and promote mental calm',
+                        icon: 'fas fa-tint',
+                        color: 'linear-gradient(135deg, #48bb78, #38a169)'
+                    },
+                    {
+                        name: 'Basti (Medicated Enema)',
+                        description: 'Specialized treatment for Vata disorders and digestive issues',
+                        icon: 'fas fa-leaf',
+                        color: 'linear-gradient(135deg, #ed8936, #dd6b20)'
+                    }
+                ],
+                'Pitta': [
+                    {
+                        name: 'Sheetali Pranayama',
+                        description: 'Cooling breathing techniques to reduce internal heat',
+                        icon: 'fas fa-wind',
+                        color: 'linear-gradient(135deg, #4299e1, #3182ce)'
+                    },
+                    {
+                        name: 'Virechana (Purgation)',
+                        description: 'Controlled cleansing therapy to eliminate excess Pitta',
+                        icon: 'fas fa-seedling',
+                        color: 'linear-gradient(135deg, #48bb78, #38a169)'
+                    },
+                    {
+                        name: 'Coconut Oil Massage',
+                        description: 'Cooling oil massage to reduce inflammation and heat',
+                        icon: 'fas fa-spa',
+                        color: 'linear-gradient(135deg, #38b2ac, #319795)'
+                    }
+                ],
+                'Kapha': [
+                    {
+                        name: 'Udvartana (Powder Massage)',
+                        description: 'Dry powder massage to stimulate circulation and reduce stagnation',
+                        icon: 'fas fa-fire',
+                        color: 'linear-gradient(135deg, #f56565, #e53e3e)'
+                    },
+                    {
+                        name: 'Steam Therapy (Swedana)',
+                        description: 'Heat therapy to increase metabolism and eliminate toxins',
+                        icon: 'fas fa-thermometer-hot',
+                        color: 'linear-gradient(135deg, #ed8936, #dd6b20)'
+                    },
+                    {
+                        name: 'Nasya (Nasal Therapy)',
+                        description: 'Medicated nasal drops to clear respiratory congestion',
+                        icon: 'fas fa-head-side-virus',
+                        color: 'linear-gradient(135deg, #9f7aea, #805ad5)'
+                    }
+                ]
+            };
+            
+            return therapies[dominantDosha] || therapies['Vata'];
+        }
+
+        function animateWave() {
+            if (!ctx || !canvas) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, 'rgba(102, 126, 234, 0.1)');
+            gradient.addColorStop(1, 'rgba(118, 75, 162, 0.1)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (isAnalyzing) {
+                // Draw pulse wave
+                drawPulseWave();
+            } else {
+                // Draw idle animation
+                drawIdleWave();
+            }
+            
+            waveAnimationId = requestAnimationFrame(animateWave);
+        }
+
+        function drawPulseWave() {
+            const time = Date.now() / 1000;
+            const centerY = canvas.height / 2;
+            const amplitude = 30;
+            const frequency = 0.02;
+            const speed = 2;
+            
+            ctx.beginPath();
+            ctx.strokeStyle = '#ff6b6b';
+            ctx.lineWidth = 3;
+            
+            for (let x = 0; x < canvas.width; x++) {
+                // Create pulse-like wave
+                const pulseWave = Math.sin((x * frequency) + (time * speed)) * amplitude;
+                const heartbeat = Math.sin((x * 0.05) + (time * 3)) * 10;
+                const y = centerY + pulseWave + heartbeat;
+                
+                if (x === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.stroke();
+            
+            // Add pulse markers
+            const markerX = (time * 50) % canvas.width;
+            ctx.beginPath();
+            ctx.arc(markerX, centerY, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#ff6b6b';
+            ctx.fill();
+        }
+
+        function drawIdleWave() {
+            const time = Date.now() / 1000;
+            const centerY = canvas.height / 2;
+            
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(102, 126, 234, 0.5)';
+            ctx.lineWidth = 2;
+            
+            for (let x = 0; x < canvas.width; x++) {
+                const y = centerY + Math.sin((x * 0.01) + time) * 20;
+                if (x === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.stroke();
+        }
+
+        function stopPulseAnalysis() {
+            isAnalyzing = false;
+            clearInterval(analysisInterval);
+            
+            // Stop camera
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+            
+            resetToIdle();
+        }
+
+        function resetToIdle() {
+            currentPhase = 'idle';
+            
+            // Update UI
+            document.getElementById('startBtn').style.display = 'inline-flex';
+            document.getElementById('stopBtn').style.display = 'none';
+            document.getElementById('pulseOverlay').style.display = 'none';
+            document.getElementById('statusIndicator').style.display = 'none';
+            
+            // Reset metrics display
+            document.getElementById('heartRate').textContent = '--';
+            document.getElementById('pulseStrength').textContent = '--';
+            document.getElementById('pulseRhythm').textContent = '--';
+            document.getElementById('pulseQuality').textContent = '--';
+        }
+
+        function updateStatus(phase, message) {
+            const indicator = document.getElementById('statusIndicator');
+            const text = document.getElementById('statusText');
+            
+            indicator.style.display = 'flex';
+            indicator.className = `status-indicator ${phase}`;
+            text.textContent = message;
+        }
+
+        function handleEmergency() {
+            // Simulate emergency alert system
+            const emergencyData = {
+                heartRate: pulseMetrics.heartRate,
+                timestamp: new Date().toISOString(),
+                location: 'Current Location', // Would use actual GPS
+                patientId: 'DEMO_PATIENT_001'
+            };
+            
+            showNotification('Emergency alert sent to nearest healthcare facility!', 'error');
+            
+            // In real implementation, this would:
+            // 1. Send alert to emergency services
+            // 2. Share current pulse data
+            // 3. Provide GPS location
+            // 4. Connect to telemedicine platform
+            
+            console.log('Emergency Alert:', emergencyData);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.zIndex = '1000';
+            notification.style.padding = '15px 25px';
+            notification.style.borderRadius = '10px';
+            notification.style.color = 'white';
+            notification.style.fontWeight = '600';
+            notification.style.animation = 'slideDown 0.5s ease';
+            notification.style.minWidth = '300px';
+            notification.style.textAlign = 'center';
+            
+            if (type === 'success') {
+                notification.style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
+            } else if (type === 'error') {
+                notification.style.background = 'linear-gradient(135deg, #f56565, #e53e3e)';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        function showError(message) {
+            showNotification(message, 'error');
+        }
+
+        // Add CSS animation for slide effects
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(-20px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Handle window resize for canvas
+        window.addEventListener('resize', () => {
+            if (canvas) {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            }
+        });
+
+        // Demo mode for presentation
+        function enableDemoMode() {
+            // Auto-start analysis after 3 seconds for demo
+            setTimeout(() => {
+                if (!isAnalyzing) {
+                    document.getElementById('startBtn').click();
+                }
+            }, 3000);
+        }
+
+        // Uncomment for demo mode
+        // enableDemoMode();
+    </script>
+
+
+{% endblock body%}

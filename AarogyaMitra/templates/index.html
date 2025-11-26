@@ -1,0 +1,1308 @@
+{% load static %}
+
+{% block title %}AarogyaMitra{% endblock title %}
+
+
+{% block body %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #72c7b1;
+            --secondary-color: #2d8d70;
+            --accent-color: #1c6a4e;
+            --dark-color: #343232;
+            --light-color: #f5f5f5;
+            --gradient: linear-gradient(135deg, #72c7b1, #2d8d70);
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --glow: 0 0 20px rgba(114, 199, 177, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #72c7b1, #2d8d70, #1c6a4e, #50b397);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -2;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        .shape:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-delay: 0s; }
+        .shape:nth-child(2) { width: 120px; height: 120px; left: 20%; animation-delay: 2s; }
+        .shape:nth-child(3) { width: 60px; height: 60px; left: 70%; animation-delay: 4s; }
+        .shape:nth-child(4) { width: 100px; height: 100px; left: 80%; animation-delay: 6s; }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(52, 50, 50, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(52, 50, 50, 0.98);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            color: #88dac4;
+            font-size: 1.3rem;
+        }
+
+        .nav-links a:hover {
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .cta-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--glow);
+        }
+
+        /* Mobile Navigation */
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section 
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding: 0 2rem;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.8;
+        }*/
+
+        .hero-btn {
+            display: inline-flex;
+            align-items: center;
+            background: white;
+            color: var(--secondary-color);
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .hero-btn i {
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .hero-btn:hover i {
+            transform: translateX(5px);
+        }
+        .hero {
+            position: relative;
+            min-height: 100vh; /* Ensures full viewport height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(114, 199, 177, 0.85);
+            overflow: hidden; /* Prevents floating image overflow */
+        }
+.hero-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    text-align: left;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.hero-text {
+    flex: 1;
+    max-width: 600px;
+    color: white;
+}
+
+.hero-text h2 {
+    font-size: 3.2rem;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1.3;
+    margin-bottom: 1.5rem;
+}
+
+.hero-text p {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.8;
+    margin-bottom: 2rem;
+}
+
+.hero-image {
+    flex: 1;
+    text-align: center;
+    
+}
+
+.hero-image img {
+    width: 100%;
+    max-width: 550px;
+    border-radius: 25px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    animation: floatImage 6s ease-in-out infinite;
+    transition: transform 0.3s ease;
+    position: relative;
+    z-index: 2;
+    
+}
+
+@keyframes floatImage {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .hero-flex {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+    .hero-text h2 {
+        font-size: 2.2rem;
+    }
+    .hero-image img {
+        max-width: 400px;
+    }
+}
+
+        /* Section Styles */
+        section {
+            padding: 80px 0;
+            position: relative;
+            margin-top: 0;
+            padding-top: 80px; /* Keeps spacing but removes visual jump */
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Features Section */
+        .features {
+            background: var(--light-color);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 2rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.7;
+        }
+
+        /* Yoga Poses Section */
+        .yoga-poses {
+            background: white;
+        }
+
+        .poses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pose-card {
+            background: var(--light-color);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .pose-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .pose-image {
+            height: 250px;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pose-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .pose-card:hover .pose-image::before {
+            background: rgba(0,0,0,0);
+        }
+
+        .pose-content {
+            padding: 2rem;
+        }
+
+        .pose-content h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .pose-content p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* About Section */
+        .about {
+            background: var(--light-color);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-text h3 {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .about-text ul {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .about-text li {
+            padding: 0.5rem 0;
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .about-text li::before {
+            content: '\f058';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--primary-color);
+            position: absolute;
+            left: 0;
+        }
+
+        .about-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Contact Section */
+        .contact {
+            background: white;
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: var(--glow);
+        }
+
+        textarea.form-input {
+            height: 150px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .footer-section p, .footer-section li {
+            color: #ccc;
+            line-height: 1.7;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-color);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-3px);
+            background: var(--secondary-color);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #444;
+            color: #999;
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background: rgba(52, 50, 50, 0.98);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transform: translateY(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .features-grid, .poses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        /* Scroll Animations */
+        [data-aos] {
+            pointer-events: none;
+        }
+
+        [data-aos].aos-animate {
+            pointer-events: auto;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <i class="fas fa-leaf"></i>
+                AarogyaMitra
+            </a>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <a href="{% url "contact" %}" class="cta-btn">Get Started</a>
+            <button class="mobile-toggle" id="mobile-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container hero-flex" data-aos="fade-up" data-aos-duration="1000">
+            <div class="hero-text">
+                <h2>AarogyaMitra <br> Your Digital Path to Holistic Healing</h2>
+                <p>Experience the harmony of Ayurveda and technology. AarogyaMitra streamlines Panchakarma therapy management, enables doctor–patient coordination, and empowers individuals to take charge of their wellness journey.</p>
+                <a href="{% url "contact" %}" class="hero-btn">
+                    Explore Now
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="hero-image" data-aos="fade-left">
+                <img src="{% static 'images/image2.png' %}" alt="Ayurvedic wellness" />
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2>Why Choose Us?</h2>
+                <p>Discover what makes AarogyaMitra the perfect choice for your healthcare journey</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                    <h3>Bridging Tradition</h3>
+                    <p>We combine the timeless wisdom of Ayurveda with modern digital innovation, ensuring therapies are delivered with precision, care, and convenience.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Patient-Centric Approach</h3>
+                    <p>Not just scheduling, we focus on patient well-being through reminders, progress tracking, and post-care guidance - creating a holistic healing journey.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Efficiency for Clinics</h3>
+                    <p>Reduces manual effort, prevents scheduling errors, and allows practitioners to spend more time focusing on patient care instead of administration.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Yoga Poses Section -->
+    <section id="yoga" class="yoga-poses">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2>Features</h2>
+                <p>Discover the power of ayurveda for modern wellness</p>
+            </div>
+            <div class="poses-grid">
+                <div class="pose-card" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="pose-image">
+                        <i class="fas fa-male"></i>
+                    </div>
+                    <div class="pose-content">
+                        <h3>Personalized <br> Dosha-Based Recommendations</h3>
+                       <p>Based on body type and dosha analysis, the system suggests diet, lifestyle tips, and herbal remedies for holistic wellness.</p>
+                    </div>
+                </div>
+                <div class="pose-card" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="pose-image">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    <div class="pose-content">
+                        <h3>Clinic & Resource Management</h3>
+                        <p>Doctors and clinics get a dedicated dashboard to manage therapy sessions, therapists, and resources efficiently.</p>
+                    </div>
+                </div>
+                <div class="pose-card" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="pose-image">
+                        <i class="fas fa-spa"></i>
+                    </div>
+                    <div class="pose-content">
+                        <h3>Automated Pulse Analysis</h3>
+                        <p>Uses technology to analyze pulse patterns and predict the patient’s Ayurvedic body type (Vata, Pitta, or Kapha), enhancing diagnostic accuracy.</p>
+                    </div>
+                </div>
+                <div class="pose-card" data-aos="zoom-in" data-aos-delay="400">
+                    <div class="pose-image">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="pose-content">
+                        <h3>Patient Engagement & Education</h3>
+                        <p>AyurSutra offers interactive learning modules, self-care guides, and progress tracking tools, helping patients stay informed, motivated, and actively involved in their healing journey.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2>About AarogyaMitra</h2>
+                <p>Learn more about our mission and values</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text" data-aos="fade-right">
+                    <h3>What is AarogyaMitra?</h3>
+                    <ul>
+                        <li><strong>AarogyaMitra Pvt. Ltd.</strong> is a private limited company in India</li>
+                        <li>Registered in 2025 and based in India</li>
+                        <li>Emphasizes authenticity in Ayurveda - organic, traditional, no compromise</li>
+                    </ul>
+                    
+                    <h3>What We Offer</h3>
+                    <ul>
+                        <li><strong>Ayurveda & Holistic Health Products:</strong> Traditional remedies with modern quality standards</li>
+                        <li><strong>Education & Training:</strong> Comprehensive learning programs for practitioners and patients</li>
+                        <li><strong>Digital Healthcare Solutions:</strong> Modern tools for traditional practices</li>
+                    </ul>
+                </div>
+                <div class="about-visual" data-aos="fade-left">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-number">1000+</span>
+                            <span class="stat-label">Happy Patients</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Expert Practitioners</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">25+</span>
+                            <span class="stat-label">Yoga Programs</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">5★</span>
+                            <span class="stat-label">Customer Rating</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2>Get In Touch</h2>
+                <p>Ready to start your wellness journey? Contact us today</p>
+            </div>
+            <form class="contact-form" data-aos="fade-up" data-aos-delay="200">
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" class="form-input" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" class="form-input" placeholder="Your Number" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-input" placeholder="Your Email" required>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-input" placeholder="Your Message" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>AarogyaMitra</h4>
+                    <p>Your trusted partner in holistic healthcare, combining traditional Ayurveda wisdom with modern digital innovation for comprehensive wellness solutions.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#yoga">Yoga Programs</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#">Ayurvedic Consultation</a></li>
+                        <li><a href="#">Yoga Training</a></li>
+                        <li><a href="#">Wellness Programs</a></li>
+                        <li><a href="#">Digital Healthcare</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> Ahmedabad, Gujarat, India</li>
+                        <li><i class="fas fa-phone"></i> +91 98765 43210</li>
+                        <li><i class="fas fa-envelope"></i> info@aarogyamitra.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 All Rights Reserved by <strong>AarogyaMitra</strong> | Developed by <strong>AarogyaMitra</strong></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        // Initialize AOS (Animate On Scroll)
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Mobile Navigation Toggle
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navLinks = document.getElementById('nav-links');
+
+        mobileToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            const icon = mobileToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        let lastScrollY = window.scrollY;
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            
+            if (currentScrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+            
+            lastScrollY = currentScrollY;
+        });
+
+        // Smooth Scrolling for Navigation Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Close mobile menu if open
+                    navLinks.classList.remove('active');
+                    const icon = mobileToggle.querySelector('i');
+                    icon.classList.add('fa-bars');
+                    icon.classList.remove('fa-times');
+                }
+            });
+        });
+
+        // Parallax Effect for Hero Section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            if (hero) {
+                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+
+        // Interactive Form Animations
+        const formInputs = document.querySelectorAll('.form-input');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+                this.parentElement.style.transition = 'transform 0.3s ease';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+
+        // Contact Form Submission
+        const contactForm = document.querySelector('.contact-form');
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            const submitBtn = this.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            
+            // Simulate form submission
+            setTimeout(() => {
+                // Show success message
+                submitBtn.textContent = 'Message Sent!';
+                submitBtn.style.background = '#28a745';
+                
+                // Reset form
+                setTimeout(() => {
+                    this.reset();
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    submitBtn.style.background = '';
+                }, 2000);
+            }, 1000);
+        });
+
+        // Animated Counter for Stats
+        const observerOptions = {
+            threshold: 0.7,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counters = entry.target.querySelectorAll('.stat-number');
+                    counters.forEach(counter => {
+                        const target = counter.textContent;
+                        const isNumber = !isNaN(parseInt(target));
+                        
+                        if (isNumber) {
+                            const targetNum = parseInt(target);
+                            let current = 0;
+                            const increment = targetNum / 100;
+                            const timer = setInterval(() => {
+                                current += increment;
+                                if (current >= targetNum) {
+                                    current = targetNum;
+                                    clearInterval(timer);
+                                }
+                                counter.textContent = Math.floor(current) + (target.includes('+') ? '+' : '');
+                            }, 20);
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        const statsGrid = document.querySelector('.stats-grid');
+        if (statsGrid) {
+            observer.observe(statsGrid);
+        }
+
+        // Feature Cards Hover Effects
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.background = 'linear-gradient(135deg, #f8f9fa, #ffffff)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.background = 'white';
+            });
+        });
+
+        // Pose Cards Interactive Effects
+        const poseCards = document.querySelectorAll('.pose-card');
+        poseCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Add a ripple effect
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(114, 199, 177, 0.3)';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                ripple.style.left = '50%';
+                ripple.style.top = '50%';
+                ripple.style.width = '100px';
+                ripple.style.height = '100px';
+                ripple.style.marginLeft = '-50px';
+                ripple.style.marginTop = '-50px';
+                ripple.style.pointerEvents = 'none';
+
+                this.style.position = 'relative';
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Add ripple animation CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Typing Effect for Hero Title
+        function typeWriter(element, text, speed = 100) {
+            let i = 0;
+            element.innerHTML = '';
+            function typing() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typing, speed);
+                }
+            }
+            typing();
+        }
+
+        // Initialize typing effect when page loads
+        window.addEventListener('load', () => {
+            const heroTitle = document.querySelector('.hero-content h1');
+            if (heroTitle) {
+                const originalText = heroTitle.textContent;
+                setTimeout(() => {
+                    typeWriter(heroTitle, originalText, 80);
+                }, 1000);
+            }
+        });
+
+        // Add floating animation to shapes
+        document.querySelectorAll('.shape').forEach((shape, index) => {
+            shape.style.animationDelay = `${index * 2}s`;
+            shape.style.animationDuration = `${20 + index * 5}s`;
+        });
+
+        // Intersection Observer for fade-in animations
+        const fadeElements = document.querySelectorAll('.fade-in');
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        });
+
+        fadeElements.forEach(element => {
+            fadeObserver.observe(element);
+        });
+
+        // Add scroll indicator
+        function addScrollIndicator() {
+            const scrollIndicator = document.createElement('div');
+            scrollIndicator.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 0%;
+                height: 4px;
+                background: linear-gradient(135deg, #72c7b1, #2d8d70);
+                z-index: 9999;
+                transition: width 0.3s ease;
+            `;
+            document.body.appendChild(scrollIndicator);
+
+            window.addEventListener('scroll', () => {
+                const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+                scrollIndicator.style.width = scrolled + '%';
+            });
+        }
+        addScrollIndicator();
+
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+{% endblock body%}

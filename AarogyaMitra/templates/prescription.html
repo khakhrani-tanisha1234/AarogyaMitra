@@ -1,0 +1,1332 @@
+{% load static %}
+
+{% block body %}
+
+<head>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #72c7b1;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        .prescription-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            height: fit-content;
+        }
+
+        .preview-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .section h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .quick-select {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .quick-btn {
+            padding: 8px 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .quick-btn.active {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            border-color: #667eea;
+            transform: translateY(-1px);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-item.checked {
+            border-color: #48bb78;
+            background: linear-gradient(135deg, #f0fff4, #e6ffed);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-item:hover {
+            border-color: #667eea;
+            transform: translateY(-1px);
+        }
+
+        .radio-item input[type="radio"]:checked + label {
+            color: white;
+        }
+
+        .radio-item:has(input:checked) {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: #667eea;
+            color: white;
+        }
+
+        .therapy-builder {
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .therapy-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #e2e8f0;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .therapy-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .counter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .counter button {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .counter button:hover {
+            transform: scale(1.1);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565, #e53e3e);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .preview-header {
+            background: linear-gradient(135deg, #4a5568, #2d3748);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .preview-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 15px;
+            border-left: 5px solid #48bb78;
+        }
+
+        .preview-section h4 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .therapy-list {
+            list-style: none;
+        }
+
+        .therapy-list li {
+            padding: 10px 15px;
+            background: white;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dosage-info {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            justify-content: center;
+        }
+
+        .smart-suggestions {
+            background: linear-gradient(135deg, #fef5e7, #fed7aa);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .suggestion-item {
+            padding: 10px 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid #ed8936;
+        }
+
+        .suggestion-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .floating-save {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(72, 187, 120, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0); }
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .preview-panel {
+                position: relative;
+                top: 0;
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <title> Digital Prescription System | AarogyaMitra </title>
+</head>
+<body>
+    <div class="container">
+        <!-- Prescription Input Panel -->
+        <div class="prescription-panel">
+            <div class="header">
+                <h1><i class="fas fa-stethoscope"></i> Digital Prescription</h1>
+                <p>Smart Clinical Documentation System</p>
+            </div>
+
+            <!-- Patient Information -->
+            <div class="section">
+                <h3><i class="fas fa-user"></i> Patient Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="patientName">Patient Name *</label>
+                        <input type="text" id="patientName" class="form-control" placeholder="Enter patient name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patientAge">Age</label>
+                        <input type="number" id="patientAge" class="form-control" placeholder="Age" min="1" max="120">
+                    </div>
+                    <div class="form-group">
+                        <label for="patientGender">Gender</label>
+                        <select id="patientGender" class="form-control">
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="patientContact">Contact Number</label>
+                        <input type="tel" id="patientContact" class="form-control" placeholder="Phone number">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chief Complaints -->
+            <div class="section">
+                <h3><i class="fas fa-exclamation-circle"></i> Chief Complaints</h3>
+                <div class="form-group">
+                    <label for="chiefComplaints">Primary Complaints</label>
+                    <textarea id="chiefComplaints" class="form-control" rows="3" placeholder="Describe main symptoms and complaints..."></textarea>
+                </div>
+                <div class="quick-select">
+                    <button type="button" class="quick-btn" onclick="addToComplaints('Joint pain and stiffness')">Joint Pain</button>
+                    <button type="button" class="quick-btn" onclick="addToComplaints('Chronic fatigue and weakness')">Fatigue</button>
+                    <button type="button" class="quick-btn" onclick="addToComplaints('Digestive issues and bloating')">Digestive Issues</button>
+                    <button type="button" class="quick-btn" onclick="addToComplaints('Sleep disorders and insomnia')">Sleep Issues</button>
+                    <button type="button" class="quick-btn" onclick="addToComplaints('Stress and anxiety')">Stress/Anxiety</button>
+                    <button type="button" class="quick-btn" onclick="addToComplaints('Skin problems and allergies')">Skin Issues</button>
+                </div>
+            </div>
+
+            <!-- Prakriti Assessment -->
+            <div class="section">
+                <h3><i class="fas fa-yin-yang"></i> Prakriti (Constitution) Assessment</h3>
+                <div class="form-group">
+                    <label>Dominant Dosha</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="prakriti" value="vata" id="vata">
+                            <label for="vata">Vata</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="prakriti" value="pitta" id="pitta">
+                            <label for="pitta">Pitta</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="prakriti" value="kapha" id="kapha">
+                            <label for="kapha">Kapha</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="prakriti" value="mixed" id="mixed">
+                            <label for="mixed">Mixed</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Current Imbalance (Vikriti)</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="vataImbalance" value="vata-imbalance">
+                            <label for="vataImbalance">Vata Imbalance</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pittaImbalance" value="pitta-imbalance">
+                            <label for="pittaImbalance">Pitta Imbalance</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="kaphaImbalance" value="kapha-imbalance">
+                            <label for="kaphaImbalance">Kapha Imbalance</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panchakarma Therapy Selection -->
+            <div class="section">
+                <h3><i class="fas fa-leaf"></i> Recommended Panchakarma Therapies</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item" data-therapy="abhyanga">
+                        <input type="checkbox" id="abhyanga" value="abhyanga">
+                        <label for="abhyanga">Abhyanga (Full Body Massage)</label>
+                    </div>
+                    <div class="checkbox-item" data-therapy="shirodhara">
+                        <input type="checkbox" id="shirodhara" value="shirodhara">
+                        <label for="shirodhara">Shirodhara (Oil Pouring)</label>
+                    </div>
+                    <div class="checkbox-item" data-therapy="nasya">
+                        <input type="checkbox" id="nasya" value="nasya">
+                        <label for="nasya">Nasya (Nasal Administration)</label>
+                    </div>
+                    <div class="checkbox-item" data-therapy="vamana">
+                        <input type="checkbox" id="vamana" value="vamana">
+                        <label for="vamana">Vamana (Therapeutic Vomiting)</label>
+                    </div>
+                    <div class="checkbox-item" data-therapy="virechana">
+                        <input type="checkbox" id="virechana" value="virechana">
+                        <label for="virechana">Virechana (Purgation)</label>
+                    </div>
+                    <div class="checkbox-item" data-therapy="basti">
+                        <input type="checkbox" id="basti" value="basti">
+                        <label for="basti">Basti (Medicated Enema)</label>
+                    </div>
+                    <div class="checkbox-item" data-therapy="karna-purana">
+                        <input type="checkbox" id="karna-purana" value="karna-purana">
+                        <label for="karna-purana">Karna Purana (Ear Treatment)</label>
+                    </div>
+                    <div class="checkbox-item" data-therapy="udvartana">
+                        <input type="checkbox" id="udvartana" value="udvartana">
+                        <label for="udvartana">Udvartana (Powder Massage)</label>
+                    </div>
+                </div>
+
+                <div id="therapyBuilder" class="therapy-builder" style="display: none;">
+                    <h4><i class="fas fa-cogs"></i> Therapy Configuration</h4>
+                    <div id="selectedTherapies"></div>
+                </div>
+            </div>
+
+            <!-- Herbal Medicines -->
+            <div class="section">
+                <h3><i class="fas fa-pills"></i> Herbal Medicines & Supplements</h3>
+                <div class="form-group">
+                    <label for="medicines">Prescribed Medicines</label>
+                    <textarea id="medicines" class="form-control" rows="4" placeholder="Enter prescribed medicines with dosage..."></textarea>
+                </div>
+                <div class="quick-select">
+                    <button type="button" class="quick-btn" onclick="addToMedicines('Triphala Churna - 1 tsp twice daily with warm water')">Triphala</button>
+                    <button type="button" class="quick-btn" onclick="addToMedicines('Ashwagandha Capsules - 2 caps daily after meals')">Ashwagandha</button>
+                    <button type="button" class="quick-btn" onclick="addToMedicines('Brahmi Ghrita - 1 tsp morning empty stomach')">Brahmi Ghrita</button>
+                    <button type="button" class="quick-btn" onclick="addToMedicines('Saraswatarishta - 15ml twice daily after meals')">Saraswatarishta</button>
+                </div>
+            </div>
+
+            <!-- Dietary Recommendations -->
+            <div class="section">
+                <h3><i class="fas fa-utensils"></i> Dietary Guidelines</h3>
+                <div class="form-group">
+                    <label>Recommended Foods</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="warmFoods" value="warm-foods">
+                            <label for="warmFoods">Warm, cooked foods</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="wholegrains" value="wholegrains">
+                            <label for="wholegrains">Whole grains (rice, quinoa)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="seasonalFruits" value="seasonal-fruits">
+                            <label for="seasonalFruits">Seasonal fruits</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ghee" value="ghee">
+                            <label for="ghee">Pure ghee in moderation</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="spices" value="spices">
+                            <label for="spices">Digestive spices</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="warmWater" value="warm-water">
+                            <label for="warmWater">Warm water throughout day</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Foods to Avoid</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="coldFoods" value="cold-foods">
+                            <label for="coldFoods">Cold, frozen foods</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="processedFoods" value="processed-foods">
+                            <label for="processedFoods">Processed foods</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="excessSweet" value="excess-sweet">
+                            <label for="excessSweet">Excessive sweets</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="alcohol" value="alcohol">
+                            <label for="alcohol">Alcohol</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifestyle Recommendations -->
+            <div class="section">
+                <h3><i class="fas fa-running"></i> Lifestyle Recommendations</h3>
+                <div class="form-group">
+                    <label for="lifestyle">Lifestyle Guidelines</label>
+                    <textarea id="lifestyle" class="form-control" rows="3" placeholder="Enter lifestyle recommendations..."></textarea>
+                </div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="earlyRise" value="early-rise">
+                        <label for="earlyRise">Early to bed, early to rise</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="yoga" value="yoga">
+                        <label for="yoga">Daily yoga practice</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="meditation" value="meditation">
+                        <label for="meditation">Meditation/Pranayama</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="regularMeals" value="regular-meals">
+                        <label for="regularMeals">Regular meal timings</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="moderateExercise" value="moderate-exercise">
+                        <label for="moderateExercise">Moderate exercise</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="stressManagement" value="stress-management">
+                        <label for="stressManagement">Stress management</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Follow-up -->
+            <div class="section">
+                <h3><i class="fas fa-calendar-check"></i> Follow-up Schedule</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="followupDate">Next Appointment</label>
+                        <input type="date" id="followupDate" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="treatmentDuration">Treatment Duration</label>
+                        <select id="treatmentDuration" class="form-control">
+                            <option value="">Select Duration</option>
+                            <option value="7-days">7 Days</option>
+                            <option value="14-days">14 Days</option>
+                            <option value="21-days">21 Days</option>
+                            <option value="1-month">1 Month</option>
+                            <option value="3-months">3 Months</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="additionalNotes">Additional Notes</label>
+                    <textarea id="additionalNotes" class="form-control" rows="3" placeholder="Any additional notes or special instructions..."></textarea>
+                </div>
+            </div>
+
+            <!-- Smart Suggestions -->
+            <div class="smart-suggestions">
+                <h4><i class="fas fa-lightbulb"></i> AI-Powered Suggestions</h4>
+                <div id="smartSuggestions">
+                    <div class="suggestion-item" onclick="applySuggestion('For Vata imbalance, consider adding Basti therapy')">
+                        💡 For Vata imbalance, consider adding Basti therapy
+                    </div>
+                    <div class="suggestion-item" onclick="applySuggestion('Recommend warm oil massage for joint stiffness')">
+                        💡 Recommend warm oil massage for joint stiffness
+                    </div>
+                    <div class="suggestion-item" onclick="applySuggestion('Include stress management for anxiety symptoms')">
+                        💡 Include stress management for anxiety symptoms
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <div class="preview-header">
+                <h2><i class="fas fa-file-medical"></i> Therapy Prescription</h2>
+                <p>Live Preview</p>
+            </div>
+
+            <div id="prescriptionPreview">
+                <div class="preview-section">
+                    <h4><i class="fas fa-user"></i> Patient Details</h4>
+                    <div id="patientPreview">
+                        <p><strong>Name:</strong> <span id="previewName">-</span></p>
+                        <p><strong>Age/Gender:</strong> <span id="previewAge">-</span> / <span id="previewGender">-</span></p>
+                        <p><strong>Contact:</strong> <span id="previewContact">-</span></p>
+                        <p><strong>Date:</strong> <span id="previewDate"></span></p>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h4><i class="fas fa-exclamation-circle"></i> Chief Complaints</h4>
+                    <div id="complaintsPreview">-</div>
+                </div>
+
+                <div class="preview-section">
+                    <h4><i class="fas fa-yin-yang"></i> Ayurvedic Assessment</h4>
+                    <div id="assessmentPreview">
+                        <p><strong>Prakriti:</strong> <span id="previewPrakriti">-</span></p>
+                        <p><strong>Current Imbalance:</strong> <span id="previewImbalance">-</span></p>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h4><i class="fas fa-leaf"></i> Prescribed Therapies</h4>
+                    <ul id="therapyPreview" class="therapy-list">
+                        <li style="text-align: center; color: #718096;">No therapies selected</li>
+                    </ul>
+                </div>
+
+                <div class="preview-section">
+                    <h4><i class="fas fa-pills"></i> Medicines</h4>
+                    <div id="medicinesPreview">-</div>
+                </div>
+
+                <div class="preview-section">
+                    <h4><i class="fas fa-utensils"></i> Dietary Guidelines</h4>
+                    <div id="dietaryPreview">
+                        <div><strong>Recommended:</strong> <span id="recommendedFoods">-</span></div>
+                        <div><strong>Avoid:</strong> <span id="avoidFoods">-</span></div>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h4><i class="fas fa-running"></i> Lifestyle Recommendations</h4>
+                    <div id="lifestylePreview">-</div>
+                </div>
+
+                <div class="preview-section">
+                    <h4><i class="fas fa-calendar-check"></i> Follow-up</h4>
+                    <div id="followupPreview">
+                        <p><strong>Next Visit:</strong> <span id="previewFollowupDate">-</span></p>
+                        <p><strong>Duration:</strong> <span id="previewDuration">-</span></p>
+                        <p><strong>Notes:</strong> <span id="previewNotes">-</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="generatePDF()">
+                    <i class="fas fa-file-pdf"></i> Generate PDF
+                </button>
+                <button class="btn btn-success" onclick="saveToSystem()">
+                    <i class="fas fa-save"></i> Save to System
+                </button>
+                <button class="btn" onclick="emailPrescription()" style="background: linear-gradient(135deg, #ed8936, #dd6b20); color: white;">
+                    <i class="fas fa-envelope"></i> Email Patient
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Save Button -->
+    <div class="floating-save">
+        <button class="btn btn-success pulse" onclick="saveToSystem()">
+            <i class="fas fa-save"></i> Quick Save
+        </button>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedTherapies = {};
+        let prescriptionData = {};
+
+        // Initialize date
+        document.getElementById('previewDate').textContent = new Date().toLocaleDateString('en-IN');
+
+        // Real-time preview updates
+        function setupRealTimePreview() {
+            // Patient information
+            document.getElementById('patientName').addEventListener('input', function() {
+                document.getElementById('previewName').textContent = this.value || '-';
+            });
+
+            document.getElementById('patientAge').addEventListener('input', function() {
+                document.getElementById('previewAge').textContent = this.value || '-';
+            });
+
+            document.getElementById('patientGender').addEventListener('change', function() {
+                document.getElementById('previewGender').textContent = this.value || '-';
+            });
+
+            document.getElementById('patientContact').addEventListener('input', function() {
+                document.getElementById('previewContact').textContent = this.value || '-';
+            });
+
+            // Chief complaints
+            document.getElementById('chiefComplaints').addEventListener('input', function() {
+                document.getElementById('complaintsPreview').textContent = this.value || '-';
+            });
+
+            // Prakriti
+            document.querySelectorAll('input[name="prakriti"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        document.getElementById('previewPrakriti').textContent = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+                    }
+                });
+            });
+
+            // Imbalances
+            document.querySelectorAll('input[type="checkbox"][value$="imbalance"]').forEach(checkbox => {
+                checkbox.addEventListener('change', updateImbalancePreview);
+            });
+
+            // Medicines
+            document.getElementById('medicines').addEventListener('input', function() {
+                document.getElementById('medicinesPreview').textContent = this.value || '-';
+            });
+
+            // Lifestyle
+            document.getElementById('lifestyle').addEventListener('input', function() {
+                document.getElementById('lifestylePreview').textContent = this.value || '-';
+            });
+
+            // Follow-up
+            document.getElementById('followupDate').addEventListener('change', function() {
+                const date = this.value ? new Date(this.value).toLocaleDateString('en-IN') : '-';
+                document.getElementById('previewFollowupDate').textContent = date;
+            });
+
+            document.getElementById('treatmentDuration').addEventListener('change', function() {
+                document.getElementById('previewDuration').textContent = this.value || '-';
+            });
+
+            document.getElementById('additionalNotes').addEventListener('input', function() {
+                document.getElementById('previewNotes').textContent = this.value || '-';
+            });
+
+            // Dietary recommendations
+            document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', updateDietaryPreview);
+            });
+
+            // Lifestyle checkboxes
+            document.querySelectorAll('input[type="checkbox"][id$="Rise"], input[type="checkbox"][id="yoga"], input[type="checkbox"][id="meditation"], input[type="checkbox"][id="regularMeals"], input[type="checkbox"][id="moderateExercise"], input[type="checkbox"][id="stressManagement"]').forEach(checkbox => {
+                checkbox.addEventListener('change', updateLifestylePreview);
+            });
+        }
+
+        // Update therapy selection
+        document.querySelectorAll('.checkbox-item[data-therapy]').forEach(item => {
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            checkbox.addEventListener('change', function() {
+                const therapy = this.value;
+                
+                if (this.checked) {
+                    item.classList.add('checked');
+                    selectedTherapies[therapy] = {
+                        name: this.nextElementSibling.textContent,
+                        sessions: 7,
+                        frequency: 'daily',
+                        duration: '45 minutes'
+                    };
+                } else {
+                    item.classList.remove('checked');
+                    delete selectedTherapies[therapy];
+                }
+                
+                updateTherapyBuilder();
+                updateTherapyPreview();
+            });
+        });
+
+        function updateTherapyBuilder() {
+            const builder = document.getElementById('therapyBuilder');
+            const container = document.getElementById('selectedTherapies');
+            
+            if (Object.keys(selectedTherapies).length === 0) {
+                builder.style.display = 'none';
+                return;
+            }
+            
+            builder.style.display = 'block';
+            container.innerHTML = '';
+            
+            Object.entries(selectedTherapies).forEach(([key, therapy]) => {
+                const therapyItem = document.createElement('div');
+                therapyItem.className = 'therapy-item';
+                therapyItem.innerHTML = `
+                    <div>
+                        <strong>${therapy.name}</strong><br>
+                        <small>Duration: ${therapy.duration} | Frequency: ${therapy.frequency}</small>
+                    </div>
+                    <div class="therapy-controls">
+                        <div class="counter">
+                            <button type="button" onclick="updateSessions('${key}', -1)">-</button>
+                            <span>${therapy.sessions} sessions</span>
+                            <button type="button" onclick="updateSessions('${key}', 1)">+</button>
+                        </div>
+                        <select onchange="updateFrequency('${key}', this.value)" style="margin-left: 10px; padding: 5px; border-radius: 5px;">
+                            <option value="daily" ${therapy.frequency === 'daily' ? 'selected' : ''}>Daily</option>
+                            <option value="alternate" ${therapy.frequency === 'alternate' ? 'selected' : ''}>Alternate days</option>
+                            <option value="weekly" ${therapy.frequency === 'weekly' ? 'selected' : ''}>Weekly</option>
+                        </select>
+                    </div>
+                `;
+                container.appendChild(therapyItem);
+            });
+        }
+
+        function updateSessions(therapy, change) {
+            if (selectedTherapies[therapy]) {
+                const newSessions = Math.max(1, selectedTherapies[therapy].sessions + change);
+                selectedTherapies[therapy].sessions = newSessions;
+                updateTherapyBuilder();
+                updateTherapyPreview();
+            }
+        }
+
+        function updateFrequency(therapy, frequency) {
+            if (selectedTherapies[therapy]) {
+                selectedTherapies[therapy].frequency = frequency;
+                updateTherapyBuilder();
+                updateTherapyPreview();
+            }
+        }
+
+        function updateTherapyPreview() {
+            const preview = document.getElementById('therapyPreview');
+            
+            if (Object.keys(selectedTherapies).length === 0) {
+                preview.innerHTML = '<li style="text-align: center; color: #718096;">No therapies selected</li>';
+                return;
+            }
+            
+            preview.innerHTML = '';
+            Object.entries(selectedTherapies).forEach(([key, therapy]) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div>
+                        <strong>${therapy.name}</strong><br>
+                        <span class="dosage-info">${therapy.sessions} sessions | ${therapy.frequency} | ${therapy.duration}</span>
+                    </div>
+                `;
+                preview.appendChild(li);
+            });
+        }
+
+        function updateImbalancePreview() {
+            const checked = Array.from(document.querySelectorAll('input[type="checkbox"][value$="imbalance"]:checked'))
+                                 .map(cb => cb.value.replace('-imbalance', '').charAt(0).toUpperCase() + cb.value.replace('-imbalance', '').slice(1))
+                                 .join(', ');
+            document.getElementById('previewImbalance').textContent = checked || '-';
+        }
+
+        function updateDietaryPreview() {
+            const recommended = Array.from(document.querySelectorAll('#warmFoods:checked, #wholegrains:checked, #seasonalFruits:checked, #ghee:checked, #spices:checked, #warmWater:checked'))
+                                     .map(cb => cb.nextElementSibling.textContent)
+                                     .join(', ');
+            
+            const avoid = Array.from(document.querySelectorAll('#coldFoods:checked, #processedFoods:checked, #excessSweet:checked, #alcohol:checked'))
+                               .map(cb => cb.nextElementSibling.textContent)
+                               .join(', ');
+            
+            document.getElementById('recommendedFoods').textContent = recommended || '-';
+            document.getElementById('avoidFoods').textContent = avoid || '-';
+        }
+
+        function updateLifestylePreview() {
+            const selected = Array.from(document.querySelectorAll('#earlyRise:checked, #yoga:checked, #meditation:checked, #regularMeals:checked, #moderateExercise:checked, #stressManagement:checked'))
+                                  .map(cb => cb.nextElementSibling.textContent)
+                                  .join(', ');
+            
+            const lifestyleText = document.getElementById('lifestyle').value;
+            const combined = [lifestyleText, selected].filter(x => x).join('. ');
+            
+            document.getElementById('lifestylePreview').textContent = combined || '-';
+        }
+
+        // Quick add functions
+        function addToComplaints(text) {
+            const textarea = document.getElementById('chiefComplaints');
+            const currentValue = textarea.value;
+            const newValue = currentValue ? `${currentValue}, ${text}` : text;
+            textarea.value = newValue;
+            document.getElementById('complaintsPreview').textContent = newValue;
+            
+            // Add visual feedback
+            event.target.classList.add('active');
+            setTimeout(() => event.target.classList.remove('active'), 1000);
+        }
+
+        function addToMedicines(text) {
+            const textarea = document.getElementById('medicines');
+            const currentValue = textarea.value;
+            const newValue = currentValue ? `${currentValue}\n${text}` : text;
+            textarea.value = newValue;
+            document.getElementById('medicinesPreview').textContent = newValue;
+            
+            // Add visual feedback
+            event.target.classList.add('active');
+            setTimeout(() => event.target.classList.remove('active'), 1000);
+        }
+
+        function applySuggestion(suggestion) {
+            showNotification(`Applied suggestion: ${suggestion}`, 'success');
+            
+            // Add visual feedback
+            event.target.style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
+            event.target.style.color = 'white';
+            setTimeout(() => {
+                event.target.style.background = '';
+                event.target.style.color = '';
+            }, 2000);
+        }
+
+        // Generate comprehensive prescription data
+        function generatePrescriptionData() {
+            prescriptionData = {
+                patient: {
+                    name: document.getElementById('patientName').value,
+                    age: document.getElementById('patientAge').value,
+                    gender: document.getElementById('patientGender').value,
+                    contact: document.getElementById('patientContact').value,
+                    date: new Date().toLocaleDateString('en-IN')
+                },
+                complaints: document.getElementById('chiefComplaints').value,
+                assessment: {
+                    prakriti: document.querySelector('input[name="prakriti"]:checked')?.value || '',
+                    imbalances: Array.from(document.querySelectorAll('input[type="checkbox"][value$="imbalance"]:checked'))
+                                     .map(cb => cb.value)
+                },
+                therapies: selectedTherapies,
+                medicines: document.getElementById('medicines').value,
+                dietary: {
+                    recommended: Array.from(document.querySelectorAll('#warmFoods:checked, #wholegrains:checked, #seasonalFruits:checked, #ghee:checked, #spices:checked, #warmWater:checked'))
+                                      .map(cb => cb.nextElementSibling.textContent),
+                    avoid: Array.from(document.querySelectorAll('#coldFoods:checked, #processedFoods:checked, #excessSweet:checked, #alcohol:checked'))
+                                .map(cb => cb.nextElementSibling.textContent)
+                },
+                lifestyle: {
+                    text: document.getElementById('lifestyle').value,
+                    recommendations: Array.from(document.querySelectorAll('#earlyRise:checked, #yoga:checked, #meditation:checked, #regularMeals:checked, #moderateExercise:checked, #stressManagement:checked'))
+                                          .map(cb => cb.nextElementSibling.textContent)
+                },
+                followup: {
+                    date: document.getElementById('followupDate').value,
+                    duration: document.getElementById('treatmentDuration').value,
+                    notes: document.getElementById('additionalNotes').value
+                }
+            };
+            
+            return prescriptionData;
+        }
+
+        // Generate PDF
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const data = generatePrescriptionData();
+            
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(70, 85, 104);
+            doc.text('AarogyaMitra - Panchakarma Prescription', 105, 20, { align: 'center' });
+            
+            // Patient Info
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Patient Information:', 20, 40);
+            doc.setFontSize(12);
+            doc.text(`Name: ${data.patient.name || 'N/A'}`, 20, 50);
+            doc.text(`Age: ${data.patient.age || 'N/A'} | Gender: ${data.patient.gender || 'N/A'}`, 20, 60);
+            doc.text(`Contact: ${data.patient.contact || 'N/A'}`, 20, 70);
+            doc.text(`Date: ${data.patient.date}`, 20, 80);
+            
+            // Chief Complaints
+            let yPos = 95;
+            doc.setFontSize(14);
+            doc.text('Chief Complaints:', 20, yPos);
+            yPos += 10;
+            doc.setFontSize(12);
+            const complaintsLines = doc.splitTextToSize(data.complaints || 'Not specified', 170);
+            doc.text(complaintsLines, 20, yPos);
+            yPos += complaintsLines.length * 7 + 10;
+            
+            // Assessment
+            doc.setFontSize(14);
+            doc.text('Ayurvedic Assessment:', 20, yPos);
+            yPos += 10;
+            doc.setFontSize(12);
+            doc.text(`Prakriti: ${data.assessment.prakriti || 'Not assessed'}`, 20, yPos);
+            yPos += 10;
+            doc.text(`Imbalances: ${data.assessment.imbalances.join(', ') || 'None specified'}`, 20, yPos);
+            yPos += 15;
+            
+            // Therapies
+            if (Object.keys(data.therapies).length > 0) {
+                doc.setFontSize(14);
+                doc.text('Prescribed Therapies:', 20, yPos);
+                yPos += 10;
+                doc.setFontSize(12);
+                
+                Object.entries(data.therapies).forEach(([key, therapy]) => {
+                    doc.text(`• ${therapy.name} - ${therapy.sessions} sessions (${therapy.frequency})`, 25, yPos);
+                    yPos += 8;
+                });
+                yPos += 5;
+            }
+            
+            // Medicines
+            if (data.medicines) {
+                doc.setFontSize(14);
+                doc.text('Medicines:', 20, yPos);
+                yPos += 10;
+                doc.setFontSize(12);
+                const medicineLines = doc.splitTextToSize(data.medicines, 170);
+                doc.text(medicineLines, 20, yPos);
+                yPos += medicineLines.length * 7 + 10;
+            }
+            
+            // Add new page if needed
+            if (yPos > 250) {
+                doc.addPage();
+                yPos = 20;
+            }
+            
+            // Dietary Guidelines
+            if (data.dietary.recommended.length > 0 || data.dietary.avoid.length > 0) {
+                doc.setFontSize(14);
+                doc.text('Dietary Guidelines:', 20, yPos);
+                yPos += 10;
+                doc.setFontSize(12);
+                
+                if (data.dietary.recommended.length > 0) {
+                    doc.text('Recommended: ' + data.dietary.recommended.join(', '), 20, yPos);
+                    yPos += 10;
+                }
+                
+                if (data.dietary.avoid.length > 0) {
+                    doc.text('Avoid: ' + data.dietary.avoid.join(', '), 20, yPos);
+                    yPos += 15;
+                }
+            }
+            
+            // Follow-up
+            doc.setFontSize(14);
+            doc.text('Follow-up:', 20, yPos);
+            yPos += 10;
+            doc.setFontSize(12);
+            doc.text(`Next Visit: ${data.followup.date ? new Date(data.followup.date).toLocaleDateString('en-IN') : 'To be scheduled'}`, 20, yPos);
+            yPos += 10;
+            doc.text(`Treatment Duration: ${data.followup.duration || 'Not specified'}`, 20, yPos);
+            
+            // Footer
+            doc.setFontSize(10);
+            doc.setTextColor(128, 128, 128);
+            doc.text('Generated by AarogyaMitra Digital Prescription System', 105, 280, { align: 'center' });
+            
+            // Save PDF
+            doc.save(`prescription_${data.patient.name || 'patient'}_${new Date().toISOString().split('T')[0]}.pdf`);
+            
+            showNotification('PDF generated successfully!', 'success');
+        }
+
+        // Save to system
+        function saveToSystem() {
+            const data = generatePrescriptionData();
+            
+            // Simulate saving to database
+            console.log('Saving prescription data:', data);
+            
+            // Save to localStorage for demo
+            const savedPrescriptions = JSON.parse(localStorage.getItem('prescriptions') || '[]');
+            savedPrescriptions.push({
+                id: Date.now(),
+                ...data,
+                savedAt: new Date().toISOString()
+            });
+            localStorage.setItem('prescriptions', JSON.stringify(savedPrescriptions));
+            
+            showNotification('Prescription saved successfully!', 'success');
+        }
+
+        // Email prescription
+        function emailPrescription() {
+            const data = generatePrescriptionData();
+            
+            if (!data.patient.contact) {
+                showNotification('Please add patient contact information', 'error');
+                return;
+            }
+            
+            // Simulate email sending
+            showNotification('Prescription sent via email!', 'success');
+        }
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '1000';
+            notification.style.padding = '15px 20px';
+            notification.style.borderRadius = '10px';
+            notification.style.color = 'white';
+            notification.style.fontWeight = '600';
+            notification.style.minWidth = '300px';
+            notification.style.animation = 'slideIn 0.3s ease';
+            
+            if (type === 'success') {
+                notification.style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
+                notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            } else if (type === 'error') {
+                notification.style.background = 'linear-gradient(135deg, #f56565, #e53e3e)';
+                notification.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            }
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Form validation
+        function validateForm() {
+            const patientName = document.getElementById('patientName').value.trim();
+            
+            if (!patientName) {
+                showNotification('Please enter patient name', 'error');
+                document.getElementById('patientName').focus();
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            setupRealTimePreview();
+            
+            // Auto-save functionality
+            setInterval(() => {
+                if (document.getElementById('patientName').value.trim()) {
+                    const data = generatePrescriptionData();
+                    sessionStorage.setItem('currentPrescription', JSON.stringify(data));
+                }
+            }, 30000); // Auto-save every 30 seconds
+            
+            // Load auto-saved data
+            const savedData = sessionStorage.getItem('currentPrescription');
+            if (savedData) {
+                // You could implement form restoration here
+                console.log('Auto-saved data found:', JSON.parse(savedData));
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+S to save
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                if (validateForm()) {
+                    saveToSystem();
+                }
+            }
+            
+            // Ctrl+P to generate PDF
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                if (validateForm()) {
+                    generatePDF();
+                }
+            }
+        });
+    </script>
+</body>
+
+{% endblock body%}

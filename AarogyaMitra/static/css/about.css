@@ -1,0 +1,256 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+.main1{
+    width: 100%;
+height: 100vh;
+background-image: url(hero-bg.png);
+background-repeat: no-repeat;
+background-size:cover;
+/* background-attachment:fixed; */
+}
+nav{
+    background-color: rgba(52, 50, 50, 0.954);
+    display: flex;
+    height: 80px;
+    width: 100%;
+    justify-content: center;
+}
+.img-logo{
+    display: flex;
+    align-items: center;
+    margin-left: 50px;
+}
+.name-logo{
+    font-size: xx-large;
+font-family: sans-serif;
+    font-weight: 900;
+    color: rgb(114, 199, 177);
+    margin-left: -20px;
+}
+.main-a,a{
+    color: rgb(80, 183, 155);
+    /* color: white; */
+font-size: 17px;
+font-family: sans-serif;
+font-weight: 560;
+text-decoration: none;
+padding: 0px 30px;
+display: flex;
+align-self: center;
+transition: all 0.2s ease-in-out;
+}
+.ho{
+    color: white;
+}
+.main-a,a:hover{
+color: white;
+}
+.get-s{
+    height: 40px;
+    border-radius: 5px;
+    width: 150px;
+    background-color :rgb(45, 141, 112);
+    border: none;
+    margin-left: 30px;
+}
+
+.get-started{
+font-size: 14px;
+color: white;
+width: 100px;
+padding-left: 20px;
+}
+
+.nav2{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 1500px;
+}
+.main5{
+    width: 100%;
+    height: 1400px;
+    background-color: whitesmoke;
+}
+.about{
+    width: 1000px;
+    height: 700px;
+    justify-self: center;
+}
+.ab{
+    padding: 50px;
+}
+.b{
+    padding-bottom: 20px;
+}
+.wia{
+    font-size: 20px;
+    font-weight: 500;
+    font-family: sans-serif;
+   padding: 50px 50px 0px;
+    color:rgba(52, 50, 50, 0.954);
+    /* color: rgb(188, 17, 17); */
+}
+.w{
+    padding: 40px 50px 0px;
+}
+.w2{
+    padding-top:20px;
+}
+hr{
+margin-top: 50px;
+}
+
+.wia3{
+    padding-top: 0;
+}
+.wia2{
+   padding:30px;
+   padding-left: 50px;
+
+}
+
+.b:hover{
+    color:rgba(52, 50, 50, 0.954);
+}
+.what2{
+    padding-top: 50px;
+}
+.what{
+    font-size: 30px;
+    font-family: sans-serif;
+    font-weight: 600;
+    /* color:rgba(52, 50, 50, 0.954); */
+    color: rgb(31, 127, 98);
+    text-decoration: underline;
+    padding-left: 50px;
+}
+footer{
+    width: 100%;
+    height: 430px;
+        background-color: rgb(31, 127, 98);
+        justify-items: center;
+}
+.sec-foot{
+    display: flex;
+    width: 1300px;
+    justify-content: space-evenly;
+    padding: 50px;
+    font-size: 25px;
+    font-family: sans-serif;
+    font-weight: 600;
+    color: whitesmoke;
+}
+.sec-ft1,.sec-ft2,.sec-ft3{
+    padding: 20px 0px 0px;
+    font-size: 20px;
+    text-align: left;
+    font-weight: 500;
+    color: whitesmoke;
+    transition: all 0.2s ease-in-out ;
+}
+.sec-ft1:hover{
+    color: rgb(60, 202, 60);
+}
+.sec-ft2:hover{
+    color: rgb(60, 202, 60);
+}
+.sec-ft3:hover{
+    color: rgb(60, 202, 60);
+}
+.sec-ft22{
+    width: 400px;
+    padding: 20px 0px 10px;
+    font-size: 18px;
+    text-align: left;
+    font-weight: 500;
+    line-height:25px;
+}
+.sec-ft33{
+    margin-left:-54px;
+}
+.sec-ft333{
+    padding: 20px;
+    padding-bottom: 0;
+    font-size: 15px;
+}
+.co{
+    color: white;
+}
+.aaa{
+    color: whitesmoke;
+}
+.aaa:hover{
+color:rgb(60, 202, 60);
+}
+.last-foot{
+
+color: whitesmoke;
+font-size: 18px;
+font-family: sans-serif;
+font-weight: 400;
+margin-top: 10px;
+
+}
+.last-foot2{
+    color: whitesmoke;
+    font-size: 18px;
+    font-family: sans-serif;
+    font-weight: 400;
+    margin-top: 20px;
+
+}
+b:hover{
+    color: rgb(60, 202, 60);
+}
+
+.social{
+    margin:10px -12px;
+}
+.newsletter{
+    width: 250px;
+    height: 45px;
+    border-radius: 5px;
+    border: none;
+    padding-left: 15px;
+    margin-top: 27px;
+    font-size: 17px;
+}
+.newsletter-btn{
+    width: 267px;
+    height: 45px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 15px;
+    background-color: rgb(68, 207, 160);
+    font-size: 17px;
+    color: white;
+    transition: all 0.2s ease-in-out;
+}
+.newsletter-btn:hover{
+background-color: transparent;
+border: 2px solid rgb(103, 201, 146);
+color: rgb(103, 201, 146);
+}
+.newsletter-btn-a{
+    color: white;
+    height: 40px;
+    width: 82%;
+    margin-left: -5px;
+    align-items: center;
+    justify-content: center;
+}
+.newsletter-btn-a:hover{
+color: rgb(103, 201, 146);
+}
+.our{
+    justify-self: center;
+    padding-top: 120px;
+    font-size: 40px;
+    font-weight: 600;
+    font-family: sans-serif;
+    text-transform: uppercase;
+    color: rgba(52, 50, 50, 0.954);
+}

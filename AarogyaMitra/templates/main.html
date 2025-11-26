@@ -1,0 +1,1173 @@
+{% load static %}
+
+{% block body %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Documentation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #72c7b1;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 30px;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: transparent;
+            border: none;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565, #e53e3e);
+            color: white;
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .therapy-slot {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .therapy-slot:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .therapy-slot.scheduled {
+            border-left-color: #48bb78;
+            background: linear-gradient(135deg, #f0fff4, #e6ffed);
+        }
+
+        .therapy-slot.completed {
+            border-left-color: #38a169;
+            background: linear-gradient(135deg, #e6ffed, #d4ecdd);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .notification {
+            background: linear-gradient(135deg, #fbb6ce, #f687b3);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        .feedback-form {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0;
+        }
+
+        .star {
+            font-size: 24px;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #f6d55c;
+            transform: scale(1.1);
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header floating" data-aos="fade-down">
+            <h1><i class="fas fa-leaf"></i> AarogyaMitra</h1>
+            <p>Advanced Panchakarma Therapy Management Platform</p>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-tabs" data-aos="fade-up">
+            <button class="nav-tab active" onclick="showTab('scheduling')">
+                <i class="fas fa-calendar-alt"></i> Therapy Scheduling
+            </button>
+            <button class="nav-tab" onclick="showTab('notifications')">
+                <i class="fas fa-bell"></i> Notifications
+            </button>
+            <button class="nav-tab" onclick="showTab('progress')">
+                <i class="fas fa-chart-line"></i> Progress Tracking
+            </button>
+            <button class="nav-tab" onclick="showTab('feedback')">
+                <i class="fas fa-comments"></i> Feedback
+            </button>
+        </div>
+
+        <!-- Tab Contents -->
+        
+        <!-- Scheduling Tab -->
+        <div id="scheduling" class="tab-content active">
+            <div class="grid grid-2">
+                <div class="card" data-aos="fade-right">
+                    <h3><i class="fas fa-user-md"></i> Schedule New Therapy</h3>
+                    <div id = "scheduleForm">
+                    <form method="POST" action="{% url 'schedule_therapy' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="patientName">Patient Name</label>
+                            <input type="text" id="patientName" name="patientName" class="form-control" placeholder="Enter patient name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="patientName">Patient Email</label>
+                            <input type="text" id="patientEmail" name="patientEmail" class="form-control" placeholder="Enter patient email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="therapyType">Therapy Type</label>
+                            <select id="therapyType" name="therapyType" class="form-control" required>
+                                <option value="">Select Therapy</option>
+                                <option value="abhyanga">Abhyanga (Oil Massage)</option>
+                                <option value="shirodhara">Shirodhara</option>
+                                <option value="nasya">Nasya</option>
+                                <option value="vamana">Vamana</option>
+                                <option value="virechana">Virechana</option>
+                                <option value="basti">Basti</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sessions">Number of Sessions</label>
+                            <input type="number" id="sessions" name="sessions" class="form-control" min="1" max="21" placeholder="e.g., 7" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="preferredTime">Preferred Time</label>
+                            <select id="preferredTime" name ="preferredTime" class="form-control" required>
+                                <option value="">Select Time</option>
+                                <option value="morning">Morning (8:00 AM - 12:00 PM)</option>
+                                <option value="afternoon">Afternoon (12:00 PM - 4:00 PM)</option>
+                                <option value="evening">Evening (4:00 PM - 7:00 PM)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="priority">Priority Level</label>
+                            <select id="priority" name="priority" class="form-control" required>
+                                <option value="normal">Normal</option>
+                                <option value="urgent">Urgent</option>
+                                <option value="emergency">Emergency</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary pulse">
+                            <i class="fas fa-plus"></i> Schedule Therapy
+                        </button>
+                    </form>
+                </div>
+                </div>
+
+                <div class="card" data-aos="fade-left">
+                    <h3><i class="fas fa-calendar-check"></i> Scheduled Therapies</h3>
+                    <div id="scheduledTherapies">
+                        <!-- Scheduled therapies will appear here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-aos="fade-up">
+                <h3><i class="fas fa-users"></i> Therapist & Room Availability</h3>
+                <div class="grid grid-3">
+                    <div class="therapy-slot">
+                        <strong>Dr. Priya Sharma</strong><br>
+                        <small>Abhyanga Specialist</small><br>
+                        <span style="color: #48bb78;">Available: 9:00 AM - 2:00 PM</span>
+                    </div>
+                    <div class="therapy-slot">
+                        <strong>Dr. Rajesh Kumar</strong><br>
+                        <small>Panchakarma Expert</small><br>
+                        <span style="color: #48bb78;">Available: 10:00 AM - 5:00 PM</span>
+                    </div>
+                    <div class="therapy-slot">
+                        <strong>Room A - Shirodhara</strong><br>
+                        <small>Equipment: Shirodhara pot, Table</small><br>
+                        <span style="color: #f56565;">Occupied until 3:00 PM</span>
+                    </div>
+                    <div class="therapy-slot">
+                        <strong>Room B - Abhyanga</strong><br>
+                        <small>Equipment: Massage table, Oil warmers</small><br>
+                        <span style="color: #48bb78;">Available</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Tab -->
+        <div id="notifications" class="tab-content">
+            <div class="grid grid-2">
+                <div class="card" data-aos="fade-right">
+                    <h3><i class="fas fa-envelope"></i> Send Notifications</h3>
+                    <form id="notificationForm">
+                        <div class="form-group">
+                            <label for="notificationPatient">Patient</label>
+                            <select id="notificationPatient" class="form-control" required>
+                                <option value="">Select Patient</option>
+                                <option value="john">Jayesh Shah</option>
+                                <option value="jane">Amit Panchal</option>
+                                <option value="raj">Raj Patel</option>
+                                <option value="Tanisha">Tanisha Khakhrani</option>
+
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="notificationType">Notification Type</label>
+                            <select id="notificationType" class="form-control" required>
+                                <option value="">Select Type</option>
+                                <option value="pre-procedure">Pre-Procedure Instructions</option>
+                                <option value="post-procedure">Post-Procedure Care</option>
+                                <option value="reminder">Appointment Reminder</option>
+                                <option value="follow-up">Follow-up Required</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="notificationMethod">Send Via</label>
+                            <select id="notificationMethod" class="form-control" required>
+                                <option value="">Select Method</option>
+                                <option value="sms">SMS</option>
+                                <option value="email">Email</option>
+                                <option value="both">Both SMS & Email</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="customMessage">Custom Message (Optional)</label>
+                            <textarea id="customMessage" class="form-control" rows="3" placeholder="Add any custom instructions..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send Notification
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card" data-aos="fade-left">
+                    <h3><i class="fas fa-history"></i> Recent Notifications</h3>
+                    <div id="recentNotifications">
+                        <div class="notification success">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>SMS sent to Jayesh Shah</strong><br>
+                                <small>Pre-procedure instructions for Abhyanga - 2 hours ago</small>
+                            </div>
+                        </div>
+                        <div class="notification warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div>
+                                <strong>Reminder sent to Amit Panchal</strong><br>
+                                <small>Shirodhara appointment tomorrow at 10 AM - 1 day ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-aos="fade-up">
+                <h3><i class="fas fa-list-alt"></i> Standard Instructions Templates</h3>
+                <div class="grid grid-2">
+                    <div class="therapy-slot">
+                        <strong>Pre-Abhyanga Instructions</strong><br>
+                        <small>• Light meal 2 hours before therapy<br>
+                        • Avoid alcohol 24 hours prior<br>
+                        • Wear comfortable clothing</small>
+                    </div>
+                    <div class="therapy-slot">
+                        <strong>Post-Shirodhara Care</strong><br>
+                        <small>• Rest for 30 minutes after therapy<br>
+                        • Avoid head wash for 6 hours<br>
+                        • Drink warm water</small>
+                    </div>
+                    <div class="therapy-slot">
+                        <strong>Vamana Preparation</strong><br>
+                        <small>• Fasting from previous night<br>
+                        • Take prescribed medicines<br>
+                        • Mental preparation required</small>
+                    </div>
+                    <div class="therapy-slot">
+                        <strong>Basti Follow-up</strong><br>
+                        <small>• Light diet for 3 days<br>
+                        • Avoid cold foods<br>
+                        • Report any discomfort immediately</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Tab -->
+        <div id="progress" class="tab-content">
+            <div class="grid grid-2">
+                <div class="card" data-aos="fade-right">
+                    <h3><i class="fas fa-chart-pie"></i> Patient Progress Overview</h3>
+                    <div class="form-group">
+                        <label for="progressPatient">Select Patient</label>
+                        <select id="progressPatient" class="form-control" onchange="updateProgressCharts()">
+                            <option value="john">Jayesh Shah - Abhyanga Course</option>
+                            <option value="jane">Amit Panchal - Panchakarma Package</option>
+                            <option value="raj">Raj Patel - Shirodhara Sessions</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card" data-aos="fade-left">
+                    <h3><i class="fas fa-tasks"></i> Treatment Progress</h3>
+                    <div id="treatmentProgress">
+                        <div style="margin-bottom: 20px;">
+                            <strong>Abhyanga Sessions</strong>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%;"></div>
+                            </div>
+                            <small>7 of 10 sessions completed</small>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <strong>Shirodhara Sessions</strong>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 40%;"></div>
+                            </div>
+                            <small>2 of 5 sessions completed</small>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <strong>Overall Treatment</strong>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%;"></div>
+                            </div>
+                            <small>60% complete - 6 days remaining</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-aos="fade-up">
+                <h3><i class="fas fa-heartbeat"></i> Health Metrics Tracking</h3>
+                <div class="chart-container">
+                    <canvas id="healthMetricsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Tab -->
+        <div id="feedback" class="tab-content">
+            <div class="grid grid-2">
+                <div class="card" data-aos="fade-right">
+                    <h3><i class="fas fa-star"></i> Submit Feedback</h3>
+                    <form id="feedbackForm">
+                        <div class="form-group">
+                            <label for="feedbackPatient">Patient Name</label>
+                            <input type="text" id="feedbackPatient" class="form-control" placeholder="Your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="feedbackTherapy">Therapy Session</label>
+                            <select id="feedbackTherapy" class="form-control" required>
+                                <option value="">Select therapy session</option>
+                                <option value="abhyanga-session-1">Abhyanga - Session 1</option>
+                                <option value="shirodhara-session-1">Shirodhara - Session 1</option>
+                                <option value="nasya-session-1">Nasya - Session 1</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Overall Rating</label>
+                            <div class="rating-stars" data-rating="0">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="symptoms">Current Symptoms</label>
+                            <textarea id="symptoms" class="form-control" rows="3" placeholder="Describe any symptoms you're experiencing..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="improvements">Improvements Noticed</label>
+                            <textarea id="improvements" class="form-control" rows="3" placeholder="Describe any improvements you've noticed..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="sideEffects">Side Effects (if any)</label>
+                            <textarea id="sideEffects" class="form-control" rows="2" placeholder="Report any side effects..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Submit Feedback
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card" data-aos="fade-left">
+                    <h3><i class="fas fa-comments"></i> Recent Feedback</h3>
+                    <div id="recentFeedback">
+                        <div class="feedback-form">
+                            <strong>Jayesh Shah - Abhyanga Session 5</strong>
+                            <div class="rating-stars">
+                                <span class="star active">★</span>
+                                <span class="star active">★</span>
+                                <span class="star active">★</span>
+                                <span class="star active">★</span>
+                                <span class="star active">★</span>
+                            </div>
+                            <p><strong>Improvements:</strong> Feeling more relaxed, better sleep quality</p>
+                            <p><strong>Symptoms:</strong> Joint stiffness has reduced significantly</p>
+                            <small>Submitted 2 hours ago</small>
+                        </div>
+                        <div class="feedback-form">
+                            <strong>Amit Panchal - Shirodhara Session 3</strong>
+                            <div class="rating-stars">
+                                <span class="star active">★</span>
+                                <span class="star active">★</span>
+                                <span class="star active">★</span>
+                                <span class="star active">★</span>
+                                <span class="star">★</span>
+                            </div>
+                            <p><strong>Improvements:</strong> Mental clarity improved, stress levels down</p>
+                            <p><strong>Side Effects:</strong> Mild headache after first session</p>
+                            <small>Submitted 1 day ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-aos="fade-up">
+                <h3><i class="fas fa-chart-bar"></i> Feedback Analytics</h3>
+                <div class="chart-container">
+                    <canvas id="feedbackChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Global variables
+        let scheduledTherapies = [];
+        let notifications = [];
+        let feedbacks = [];
+        let progressChart, healthMetricsChart, feedbackChart;
+
+        // Tab navigation
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked nav tab
+            event.target.classList.add('active');
+
+            // Initialize charts when switching to progress tab
+            if (tabName === 'progress') {
+                setTimeout(() => {
+                    initializeProgressCharts();
+                }, 100);
+            }
+
+            if (tabName === 'feedback') {
+                setTimeout(() => {
+                    initializeFeedbackChart();
+                }, 100);
+            }
+        }
+
+        // Schedule therapy form handler
+        document.getElementById('scheduleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                patientName: document.getElementById('patientName').value,
+                patientEmail: document.getElementById('patientEmail').value,
+                therapyType: document.getElementById('therapyType').value,
+                sessions: document.getElementById('sessions').value,
+                preferredTime: document.getElementById('preferredTime').value,
+                priority: document.getElementById('priority').value,
+                scheduledDate: new Date().toLocaleDateString(),
+                status: 'scheduled'
+            };
+
+            scheduledTherapies.push(formData);
+            renderScheduledTherapies();
+            
+            // Show success message
+            showNotification('Therapy scheduled successfully!', 'success');
+
+              // Send notification
+            addNotification(`${formData.patientName} therapy scheduled successfully!`, 'success');
+            
+            addNotification(`Email sent to ${formData.patientName}`, 'success');
+            
+            // Reset form
+            this.reset();
+        });
+
+        function renderScheduledTherapies() {
+            const container = document.getElementById('scheduledTherapies');
+            container.innerHTML = '';
+
+            if (scheduledTherapies.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #718096; padding: 20px;">No therapies scheduled yet.</p>';
+                return;
+            }
+
+            scheduledTherapies.forEach((therapy, index) => {
+                const therapyElement = document.createElement('div');
+                therapyElement.className = `therapy-slot ${therapy.status}`;
+                therapyElement.innerHTML = `
+                    <div style="display: flex; justify-content: between; align-items: start;">
+                        <div style="flex: 1;">
+                            <strong>${therapy.patientName}</strong><br>
+                            <small>${therapy.therapyType.charAt(0).toUpperCase() + therapy.therapyType.slice(1)} - ${therapy.sessions} sessions</small><br>
+                            <small>Scheduled: ${therapy.scheduledDate} | ${therapy.preferredTime}</small><br>
+                            <span style="color: ${therapy.priority === 'urgent' ? '#f56565' : therapy.priority === 'emergency' ? '#e53e3e' : '#48bb78'};">
+                                Priority: ${therapy.priority.toUpperCase()}
+                            </span>
+                        </div>
+                        <button class="btn btn-success" onclick="completeTherapy(${index})" style="margin-left: 10px;">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(therapyElement);
+            });
+        }
+
+        function completeTherapy(index) {
+            scheduledTherapies[index].status = 'completed';
+            renderScheduledTherapies();
+            showNotification('Therapy session marked as completed!', 'success');
+        }
+
+        // Notification form handler
+        document.getElementById('notificationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                patient: document.getElementById('notificationPatient').value,
+                type: document.getElementById('notificationType').value,
+                method: document.getElementById('notificationMethod').value,
+                customMessage: document.getElementById('customMessage').value,
+                timestamp: new Date().toLocaleString(),
+                status: 'sent'
+            };
+
+            notifications.push(formData);
+            addRecentNotification(formData);
+            
+            // Show success message
+            showNotification(`Notification sent via ${formData.method.toUpperCase()}!`, 'success');
+            
+            // Reset form
+            this.reset();
+        });
+
+        function addRecentNotification(notification) {
+            const container = document.getElementById('recentNotifications');
+            const notificationElement = document.createElement('div');
+            notificationElement.className = 'notification success';
+            notificationElement.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <strong>${notification.method.toUpperCase()} sent to ${notification.patient}</strong><br>
+                    <small>${notification.type} - Just now</small>
+                </div>
+            `;
+            container.insertBefore(notificationElement, container.firstChild);
+        }
+
+        // Feedback form handler
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const rating = document.querySelector('.rating-stars').dataset.rating || 0;
+            const formData = {
+                patient: document.getElementById('feedbackPatient').value,
+                therapy: document.getElementById('feedbackTherapy').value,
+                rating: parseInt(rating),
+                symptoms: document.getElementById('symptoms').value,
+                improvements: document.getElementById('improvements').value,
+                sideEffects: document.getElementById('sideEffects').value,
+                timestamp: new Date().toLocaleString()
+            };
+
+            feedbacks.push(formData);
+            addRecentFeedback(formData);
+            
+            // Show success message
+            showNotification('Feedback submitted successfully!', 'success');
+            
+            // Reset form and rating
+            this.reset();
+            resetRating();
+        });
+
+        function addRecentFeedback(feedback) {
+            const container = document.getElementById('recentFeedback');
+            const feedbackElement = document.createElement('div');
+            feedbackElement.className = 'feedback-form';
+            
+            const stars = Array(5).fill(0).map((_, i) => 
+                `<span class="star ${i < feedback.rating ? 'active' : ''}">★</span>`
+            ).join('');
+            
+            feedbackElement.innerHTML = `
+                <strong>${feedback.patient} - ${feedback.therapy}</strong>
+                <div class="rating-stars">${stars}</div>
+                ${feedback.improvements ? `<p><strong>Improvements:</strong> ${feedback.improvements}</p>` : ''}
+                ${feedback.symptoms ? `<p><strong>Symptoms:</strong> ${feedback.symptoms}</p>` : ''}
+                ${feedback.sideEffects ? `<p><strong>Side Effects:</strong> ${feedback.sideEffects}</p>` : ''}
+                <small>Submitted just now</small>
+            `;
+            container.insertBefore(feedbackElement, container.firstChild);
+        }
+
+        // Rating system
+        document.querySelectorAll('.rating-stars').forEach(ratingContainer => {
+            const stars = ratingContainer.querySelectorAll('.star');
+            
+            stars.forEach((star, index) => {
+                star.addEventListener('click', () => {
+                    const rating = index + 1;
+                    ratingContainer.dataset.rating = rating;
+                    
+                    stars.forEach((s, i) => {
+                        if (i < rating) {
+                            s.classList.add('active');
+                        } else {
+                            s.classList.remove('active');
+                        }
+                    });
+                });
+                
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#f6d55c';
+                        } else {
+                            s.style.color = '#e2e8f0';
+                        }
+                    });
+                });
+            });
+            
+            ratingContainer.addEventListener('mouseleave', () => {
+                const rating = parseInt(ratingContainer.dataset.rating) || 0;
+                stars.forEach((s, i) => {
+                    if (i < rating) {
+                        s.style.color = '#f6d55c';
+                    } else {
+                        s.style.color = '#e2e8f0';
+                    }
+                });
+            });
+        });
+
+        function resetRating() {
+            const ratingContainer = document.querySelector('.rating-stars');
+            ratingContainer.dataset.rating = '0';
+            ratingContainer.querySelectorAll('.star').forEach(star => {
+                star.classList.remove('active');
+                star.style.color = '#e2e8f0';
+            });
+        }
+
+        // Progress charts
+        function initializeProgressCharts() {
+            const ctx1 = document.getElementById('progressChart').getContext('2d');
+            
+            if (progressChart) {
+                progressChart.destroy();
+            }
+            
+            progressChart = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Remaining'],
+                    datasets: [{
+                        data: [70, 30],
+                        backgroundColor: [
+                            'linear-gradient(135deg, #48bb78, #38a169)',
+                            '#e2e8f0'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            const ctx2 = document.getElementById('healthMetricsChart').getContext('2d');
+            
+            if (healthMetricsChart) {
+                healthMetricsChart.destroy();
+            }
+            
+            healthMetricsChart = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: ['Day 1', 'Day 3', 'Day 5', 'Day 7', 'Day 9', 'Day 11', 'Day 13'],
+                    datasets: [{
+                        label: 'Pain Level (1-10)',
+                        data: [8, 7, 6, 5, 4, 3, 2],
+                        borderColor: '#f56565',
+                        backgroundColor: 'rgba(245, 101, 101, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Energy Level (1-10)',
+                        data: [3, 4, 5, 6, 6, 7, 8],
+                        borderColor: '#48bb78',
+                        backgroundColor: 'rgba(72, 187, 120, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Sleep Quality (1-10)',
+                        data: [4, 5, 6, 7, 7, 8, 9],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeFeedbackChart() {
+            const ctx = document.getElementById('feedbackChart').getContext('2d');
+            
+            if (feedbackChart) {
+                feedbackChart.destroy();
+            }
+            
+            feedbackChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Abhyanga', 'Shirodhara', 'Nasya', 'Vamana', 'Virechana', 'Basti'],
+                    datasets: [{
+                        label: 'Average Rating',
+                        data: [4.5, 4.8, 4.2, 4.0, 4.3, 4.6],
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.8)',
+                            'rgba(72, 187, 120, 0.8)',
+                            'rgba(245, 101, 101, 0.8)',
+                            'rgba(237, 137, 54, 0.8)',
+                            'rgba(156, 163, 175, 0.8)',
+                            'rgba(168, 85, 247, 0.8)'
+                        ],
+                        borderRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateProgressCharts() {
+            const patient = document.getElementById('progressPatient').value;
+            // Update chart data based on selected patient
+            // This would normally fetch data from a backend
+            if (progressChart) {
+                progressChart.data.datasets[0].data = patient === 'john' ? [70, 30] : patient === 'jane' ? [85, 15] : [40, 60];
+                progressChart.update();
+            }
+        }
+
+        // Utility function to show notifications
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '1000';
+            notification.style.minWidth = '300px';
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                <div>${message}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize demo data
+        function initializeDemoData() {
+            // Add some demo scheduled therapies
+            scheduledTherapies.push(
+                {
+                    patientName: 'Jayesh Shah',
+                    therapyType: 'abhyanga',
+                    sessions: '10',
+                    preferredTime: 'morning',
+                    priority: 'normal',
+                    scheduledDate: new Date().toLocaleDateString(),
+                    status: 'scheduled'
+                },
+                {
+                    patientName: 'Amit Panchal',
+                    therapyType: 'shirodhara',
+                    sessions: '5',
+                    preferredTime: 'afternoon',
+                    priority: 'urgent',
+                    scheduledDate: new Date().toLocaleDateString(),
+                    status: 'completed'
+                }
+            );
+            
+            renderScheduledTherapies();
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDemoData();
+            
+            // Add floating animation to cards
+            document.querySelectorAll('.card').forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+
+        // Add smooth scrolling and enhanced interactions
+        document.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('.header');
+            const speed = scrolled * 0.5;
+            parallax.style.transform = `translateY(${speed}px)`;
+        });
+
+        // Enhanced hover effects for therapy slots
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.classList.contains('therapy-slot')) {
+                e.target.style.transform = 'translateX(10px) scale(1.02)';
+                e.target.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)';
+            }
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            if (e.target.classList.contains('therapy-slot')) {
+                e.target.style.transform = 'translateX(0) scale(1)';
+                e.target.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+            }
+        });
+    </script>
+</body>
+
+{% endblock body%}

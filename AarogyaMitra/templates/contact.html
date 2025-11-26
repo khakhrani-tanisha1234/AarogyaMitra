@@ -1,0 +1,681 @@
+{% load static %}
+
+{% block title %}Implementation | AarogyaMitra{% endblock title %}
+
+{% block body %}
+ <title> Implementation | AarogyaMitra </title>
+  <style>
+    :root {
+      --primary: #2d8d70;
+      --secondary: #72c7b1;
+      --accent: #a2e0c4;
+      --bg: #0a1f1a;
+      --white: #fff;
+      --text: #e0e0e0;
+      --card-bg: rgba(255, 255, 255, 0.05);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Particles Background */
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      background: linear-gradient(135deg, #0a1f1a 0%, #1a3d32 50%, #0f2820 100%);
+    }
+
+    /* Animated Mesh Gradient Overlay */
+    .mesh-gradient {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      opacity: 0.3;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(45, 141, 112, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(114, 199, 177, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(162, 224, 196, 0.3) 0%, transparent 50%);
+      animation: meshMove 20s ease-in-out infinite;
+    }
+
+    @keyframes meshMove {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(50px, -50px) scale(1.1); }
+      66% { transform: translate(-50px, 50px) scale(0.9); }
+    }
+
+    /* Glassmorphism Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 5%;
+      background: rgba(45, 141, 112, 0.1);
+      backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid rgba(114, 199, 177, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    header.scrolled {
+      background: rgba(45, 141, 112, 0.95);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 1px;
+    }
+
+    header h1 i {
+      font-size: 2rem;
+      animation: leafPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes leafPulse {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.1) rotate(10deg); }
+    }
+
+    .btn-home {
+      position: relative;
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 12px 30px;
+      border-radius: 50px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      transition: all 0.4s ease;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(45, 141, 112, 0.4);
+    }
+
+    .btn-home::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-home:hover::before {
+      left: 100%;
+    }
+
+    .btn-home:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(45, 141, 112, 0.6);
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      z-index: 2;
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 150px 5% 80px;
+    }
+
+    .section-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #72c7b1, #a2e0c4, #ffffff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      position: relative;
+      animation: titleGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes titleGlow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(114, 199, 177, 0.3)); }
+      50% { filter: drop-shadow(0 0 40px rgba(162, 224, 196, 0.5)); }
+    }
+
+    .section-subtitle {
+      font-size: 1.2rem;
+      color: var(--accent);
+      font-weight: 300;
+      max-width: 700px;
+      line-height: 1.8;
+      margin-bottom: 40px;
+    }
+
+    /* Cards Container */
+    .cards-container {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2.5rem;
+      padding: 0 5%;
+      margin-bottom: 100px;
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .card-link {
+        text-decoration: none; /* removes the blue underline */
+        color: inherit; /* keeps original text color */
+        display: block; /* allows the link to cover the full card */
+      }
+      
+      .card-link:hover {
+        text-decoration: none; /* ensures no underline on hover */
+        color: inherit; /* prevent text color from changing */
+      }
+      
+    /* Glassmorphism Card */
+    .card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(114, 199, 177, 0.2);
+      border-radius: 30px;
+      padding: 40px 30px;
+      text-align: center;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(45, 141, 112, 0.1), rgba(114, 199, 177, 0.1));
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card:hover {
+      transform: translateY(-15px) scale(1.02);
+      border-color: var(--secondary);
+      box-shadow: 
+        0 20px 60px rgba(45, 141, 112, 0.4),
+        0 0 0 1px rgba(114, 199, 177, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .icon-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 25px;
+    }
+
+    .icon-bg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, rgba(114, 199, 177, 0.3), transparent);
+      border-radius: 50%;
+      animation: iconPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes iconPulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+      50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+    }
+
+    .card i {
+      position: relative;
+      font-size: 3.5rem;
+      background: linear-gradient(135deg, var(--secondary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      transition: all 0.5s ease;
+      display: inline-block;
+    }
+
+    .card:hover i {
+      transform: rotateY(360deg) scale(1.2);
+    }
+
+    .card h3 {
+      color: var(--white);
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      font-weight: 700;
+      position: relative;
+    }
+
+    .card p {
+      font-size: 1rem;
+      color: var(--text);
+      line-height: 1.8;
+      position: relative;
+    }
+
+    .card-number {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 4rem;
+      font-weight: 800;
+      color: rgba(114, 199, 177, 0.1);
+      transition: all 0.5s ease;
+    }
+
+    .card:hover .card-number {
+      color: rgba(114, 199, 177, 0.2);
+      transform: scale(1.2);
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(45, 141, 112, 0.2);
+      z-index: 1001;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+      width: 0%;
+      transition: width 0.1s ease;
+      box-shadow: 0 0 10px var(--secondary);
+    }
+
+    /* Floating Orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.4;
+      z-index: 1;
+      animation: floatOrb 15s infinite ease-in-out;
+      pointer-events: none;
+    }
+
+    .orb1 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(45, 141, 112, 0.6), transparent);
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .orb2 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(114, 199, 177, 0.5), transparent);
+      bottom: 10%;
+      right: 10%;
+      animation-delay: 5s;
+    }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(50px, -50px); }
+      50% { transform: translate(-30px, -80px); }
+      75% { transform: translate(-50px, 30px); }
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 30px 20px;
+      background: rgba(45, 141, 112, 0.1);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(114, 199, 177, 0.2);
+      color: var(--text);
+    }
+
+    footer p {
+      font-size: 1rem;
+      font-weight: 300;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .section-title {
+        font-size: 2.5rem;
+      }
+
+      .cards-container {
+        grid-template-columns: 1fr;
+        padding: 0 5%;
+      }
+
+      header h1 {
+        font-size: 1.4rem;
+      }
+    }
+
+    /* Custom Cursor */
+    .cursor {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--secondary);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transition: all 0.15s ease;
+      transform: translate(-50%, -50%);
+    }
+
+    .cursor-follower {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transition: all 0.3s ease;
+      transform: translate(-50%, -50%);
+      opacity: 0.5;
+    }
+  </style>
+
+<body>
+
+  <!-- Progress Bar -->
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor"></div>
+  <div class="cursor-follower"></div>
+
+  <!-- Particles Background -->
+  <div id="particles-js"></div>
+  
+  <!-- Mesh Gradient Overlay -->
+  <div class="mesh-gradient"></div>
+
+  <!-- Floating Orbs -->
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <!-- Header -->
+  <header id="header">
+    <h1><i class="fas fa-leaf"></i> AarogyaMitra</h1>
+    <a href="{% url 'home' %}" class="btn-home">Back to Home</a>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h2 class="section-title">Feature Implementation Modules</h2>
+    <p class="section-subtitle">Empowering Ayurvedic healthcare with cutting-edge technology and traditional wisdom</p>
+  </section>
+
+  <!-- Cards Container -->
+  <div class="cards-container" id="cardsContainer">
+
+    <a href="{% url 'pulse' %}" class="card-link">
+    <div class="card" data-index="1">
+    
+      <span class="card-number">01</span>
+      <div class="icon-wrapper">
+        <div class="icon-bg"></div>
+        <i class="fas fa-heartbeat"></i>
+      </div>
+      <h3>Dosha Detection via Pulse</h3>
+      <p>Integrating AI-powered pulse pattern analysis to determine individual Prakriti — identifying dominant dosha (Vata, Pitta, or Kapha) for accurate Panchakarma recommendations.</p>
+      
+    </div>
+    </a>
+
+    <a href="{% url 'doctor' %}" class="card-link">
+    <div class="card" data-index="2">
+      <span class="card-number">02</span>
+      <div class="icon-wrapper">
+        <div class="icon-bg"></div>
+        <i class="fas fa-clipboard-list"></i>
+      </div>
+      <h3>Therapy Scheduling & Notifications</h3>
+      <p>Smart scheduling with automated email and SMS reminders, helping doctors manage therapy sessions and patients stay on track with treatment plans.</p>
+    </div>
+    </a>
+
+    <a href="{% url 'prescription' %}" class="card-link">
+    <div class="card" data-index="3">
+      <span class="card-number">03</span>
+      <div class="icon-wrapper">
+        <div class="icon-bg"></div>
+        <i class="fas fa-prescription-bottle-alt"></i>
+      </div>
+      <h3>Digital Prescription</h3>
+      <p>Secure e-prescription generation and sharing system, ensuring clarity and traceability between doctor and patient for herbal formulations and diet plans.</p>
+    </div>
+    </a>
+
+    <a href="{% url 'patient' %}" class="card-link">
+    <div class="card" data-index="4">
+      <span class="card-number">04</span>
+      <div class="icon-wrapper">
+        <div class="icon-bg"></div>
+        <i class="fas fa-book-open-reader"></i>
+      </div>
+      <h3>Patient Engagement & Education</h3>
+      <p>Interactive modules to educate patients on Ayurvedic principles, including Dosha balancing, lifestyle tips, and self-assessment for Panchakarma needs.</p>
+    </div>
+    </a>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 AarogyaMitra | Developed by AarogyaMitra</p>
+  </footer>
+
+ <!-- Fonts & Icons -->
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+ <!-- Particles.js -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js" ></script>
+ 
+ <!-- GSAP Animation -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" ></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+
+  <!-- Scripts -->
+  <script>
+    // Particles.js Configuration
+    particlesJS('particles-js', {
+      particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: '#72c7b1' },
+        shape: { type: 'circle' },
+        opacity: { value: 0.3, random: true },
+        size: { value: 3, random: true },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: '#72c7b1',
+          opacity: 0.2,
+          width: 1
+        },
+        move: {
+          enable: true,
+          speed: 2,
+          direction: 'none',
+          random: true,
+          out_mode: 'out'
+        }
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: {
+          onhover: { enable: true, mode: 'grab' },
+          onclick: { enable: true, mode: 'push' }
+        },
+        modes: {
+          grab: { distance: 200, line_linked: { opacity: 0.5 } },
+          push: { particles_nb: 4 }
+        }
+      }
+    });
+
+    // GSAP ScrollTrigger Animations
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Animate cards on scroll
+    gsap.from('.card', {
+      scrollTrigger: {
+        trigger: '.cards-container',
+        start: 'top 80%',
+        toggleActions: 'play none none reverse'
+      },
+      y: 100,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.2,
+      ease: 'power3.out'
+    });
+
+    // Hero section animation
+    gsap.from('.section-title', {
+      y: -50,
+      opacity: 0,
+      duration: 1,
+      delay: 0.5,
+      ease: 'power3.out'
+    });
+
+    gsap.from('.section-subtitle', {
+      y: 30,
+      opacity: 0,
+      duration: 1,
+      delay: 0.8,
+      ease: 'power3.out'
+    });
+
+    // Header scroll effect
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('progressBar').style.width = scrolled + '%';
+    });
+
+    // Custom cursor
+    const cursor = document.querySelector('.cursor');
+    const follower = document.querySelector('.cursor-follower');
+
+    let mouseX = 0, mouseY = 0;
+    let followerX = 0, followerY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top = mouseY + 'px';
+    });
+
+    function animateFollower() {
+      followerX += (mouseX - followerX) * 0.1;
+      followerY += (mouseY - followerY) * 0.1;
+      follower.style.left = followerX + 'px';
+      follower.style.top = followerY + 'px';
+      requestAnimationFrame(animateFollower);
+    }
+    animateFollower();
+
+    // Card hover effect
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        cursor.style.width = '60px';
+        cursor.style.height = '60px';
+        cursor.style.backgroundColor = 'rgba(114, 199, 177, 0.2)';
+      });
+
+      card.addEventListener('mouseleave', () => {
+        cursor.style.width = '20px';
+        cursor.style.height = '20px';
+        cursor.style.backgroundColor = 'transparent';
+      });
+    });
+
+    // Add 3D tilt effect to cards
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = (y - centerY) / 10;
+        const rotateY = (centerX - x) / 10;
+        
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-15px) scale(1.02)`;
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0) scale(1)';
+      });
+    });
+  </script>
+
+</body>
+{% endblock body %}
